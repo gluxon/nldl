@@ -1,0 +1,15 @@
+[package]
+name = "netlink15_genl"
+version = "0.1.0"
+authors = ["Brandon Cheng <brandon.cheng@protonmail.com>"]
+edition = "2018"
+
+[dependencies]
+libc = "0.2.66"
+netlink15_core = { path = "../netlink15_core" }
+netlink15_derive = { path = "../netlink15_derive" }
+nix = "0.18.0"
+thiserror = "1.0"
+
+[dev-dependencies]
+anyhow = "1.0"

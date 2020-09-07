@@ -1,0 +1,13 @@
+[package]
+name = "netlink15_derive"
+version = "0.1.0"
+authors = ["Brandon Cheng <brandon.cheng@protonmail.com>"]
+edition = "2018"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = "1.0"
+quote = "1.0"
+thiserror = "1.0"

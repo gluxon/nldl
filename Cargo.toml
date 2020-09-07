@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "netlink15_core",
+    "netlink15_derive",
+    "netlink15_genl"
+]
