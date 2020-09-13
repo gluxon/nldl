@@ -19,7 +19,7 @@ enum NetlinkAttributeKind<'a> {
     ///
     ///  - There should only ever be one variant marked with `nla_type(_)`.
     ///  - The payload value should implement the `NetlinkSerializable` trait.
-    Unknown(NetlinkAttributeKindUnknown<'a>),
+    Wildcard(NetlinkAttributeKindWildcard<'a>),
     /// Enum variants without `nla_type`.
     Unmarked(NetlinkAttributeKindUnmarked<'a>),
 }
@@ -50,7 +50,7 @@ impl<'a> TryFrom<&'a Variant> for NetlinkAttributeKind<'a> {
         };
 
         if is_underscore(ty.clone()) {
-            return Ok(Self::Unknown(NetlinkAttributeKindUnknown { ident }));
+            return Ok(Self::Wildcard(NetlinkAttributeKindWildcard { ident }));
         }
 
         match variant.fields.len() {
@@ -73,7 +73,7 @@ pub struct NetlinkAttributeKindSome<'a> {
     pub ty: TokenStream,
 }
 
-pub struct NetlinkAttributeKindUnknown<'a> {
+pub struct NetlinkAttributeKindWildcard<'a> {
     pub ident: &'a syn::Ident,
 }
 
@@ -84,7 +84,7 @@ pub struct NetlinkAttributeKindUnmarked<'a> {
 pub struct PartitionedAttributeKinds<'a> {
     pub none: Vec<NetlinkAttributeKindNone<'a>>,
     pub some: Vec<NetlinkAttributeKindSome<'a>>,
-    pub unknown: Vec<NetlinkAttributeKindUnknown<'a>>,
+    pub wildcard: Vec<NetlinkAttributeKindWildcard<'a>>,
     pub unmarked: Vec<NetlinkAttributeKindUnmarked<'a>>,
 }
 
@@ -93,7 +93,7 @@ impl<'a> PartitionedAttributeKinds<'a> {
         let mut partitioned_variants = Self {
             none: vec![],
             some: vec![],
-            unknown: vec![],
+            wildcard: vec![],
             unmarked: vec![],
         };
 
@@ -102,7 +102,7 @@ impl<'a> PartitionedAttributeKinds<'a> {
             match variant {
                 NetlinkAttributeKind::None(val) => partitioned_variants.none.push(val),
                 NetlinkAttributeKind::Some(val) => partitioned_variants.some.push(val),
-                NetlinkAttributeKind::Unknown(val) => partitioned_variants.unknown.push(val),
+                NetlinkAttributeKind::Wildcard(val) => partitioned_variants.wildcard.push(val),
                 NetlinkAttributeKind::Unmarked(val) => partitioned_variants.unmarked.push(val),
             }
         }

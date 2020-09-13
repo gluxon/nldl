@@ -27,12 +27,12 @@ fn impl_netlink_attribute_serializable(ast: &syn::DeriveInput) -> proc_macro2::T
             unmarked_variant.ident
         );
     }
-    let unknown_ident = match &partitioned_variants.unknown[..] {
+    let wildcard_ident = match &partitioned_variants.wildcard[..] {
         [variant] => vec![variant.ident],
         [] => vec![],
         [..] => panic!(
             "Only 1 variant may be marked with #[nla_type(_)]. Saw {}",
-            partitioned_variants.unknown.len()
+            partitioned_variants.wildcard.len()
         ),
     };
 
@@ -65,7 +65,7 @@ fn impl_netlink_attribute_serializable(ast: &syn::DeriveInput) -> proc_macro2::T
                 match self {
                     #( Self::#none_idents => #none_nla_types, )*
                     #( Self::#some_idents(_) => #some_nla_types, )*
-                    #( Self::#unknown_ident(a) => NetlinkAttributeSerializable::get_type(a), )*
+                    #( Self::#wildcard_ident(a) => NetlinkAttributeSerializable::get_type(a), )*
                 }
             }
 
@@ -76,7 +76,7 @@ fn impl_netlink_attribute_serializable(ast: &syn::DeriveInput) -> proc_macro2::T
                 match self {
                     #( Self::#none_idents => {}, )*
                     #( Self::#some_idents(val) => NetlinkPayloadRequest::serialize(val, buf), )*
-                    #( Self::#unknown_ident(a) => NetlinkAttributeSerializable::serialize_payload(a, buf), )*
+                    #( Self::#wildcard_ident(a) => NetlinkAttributeSerializable::serialize_payload(a, buf), )*
                 }
             }
         }
