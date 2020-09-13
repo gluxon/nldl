@@ -8,7 +8,7 @@ mod parsing;
 
 // Created following pattern from:
 // https://doc.rust-lang.org/1.46.0/book/ch19-06-macros.html?highlight=procedural,macros#how-to-write-a-custom-derive-macro
-#[proc_macro_derive(NetlinkAttributeSerializable, attributes(netlink15))]
+#[proc_macro_derive(NetlinkAttributeSerializable, attributes(nla_type, nla_type_unknown))]
 pub fn netlink_attribute_serializable_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).expect("Unable to parse DeriveInput from TokenStream");
     impl_netlink_attribute_serializable(&ast)
@@ -22,13 +22,16 @@ fn impl_netlink_attribute_serializable(ast: &syn::DeriveInput) -> TokenStream {
     let partitioned_variants = PartitionedAttributeKinds::from(data_enum)
         .expect("Failed to parse enum variants in NetlinkAttributeSerializable derive.");
     if let Some(unmarked_variant) = partitioned_variants.unmarked.first() {
-        panic!("Please annotate all enum variants with #[netlink15(nla_type = ...)]. Saw \"{}\" unannotated.", unmarked_variant.ident);
+        panic!(
+            "Please annotate all enum variants with #[nla_type(..)]. Saw \"{}\" unannotated.",
+            unmarked_variant.ident
+        );
     }
     let unknown_ident = match &partitioned_variants.unknown[..] {
         [variant] => vec![variant.ident],
         [] => vec![],
         [..] => panic!(
-            "Only 1 variant may be marked with #[netlink15(nla_type_unknown)]. Saw {}",
+            "Only 1 variant may be marked with #[nla_type_unknown]. Saw {}",
             partitioned_variants.unknown.len()
         ),
     };

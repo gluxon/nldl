@@ -24,13 +24,13 @@ pub enum ControllerAttribute {
 
 #[derive(Debug, PartialEq, NetlinkAttributeSerializable)]
 pub enum ControllerAttributeOperation {
-    #[netlink15(nla_type = "libc::CTRL_ATTR_OP_UNSPEC as u16")]
+    #[nla_type(libc::CTRL_ATTR_OP_UNSPEC as u16)]
     Unspec,
-    #[netlink15(nla_type = "libc::CTRL_ATTR_OP_ID as u16")]
+    #[nla_type(libc::CTRL_ATTR_OP_ID as u16)]
     Id(u32),
-    #[netlink15(nla_type = "libc::CTRL_ATTR_OP_FLAGS as u16")]
+    #[nla_type(libc::CTRL_ATTR_OP_FLAGS as u16)]
     Flags(u32),
-    #[netlink15(nla_type_unknown)]
+    #[nla_type_unknown]
     Unknown(UnknownAttribute),
 }
 
