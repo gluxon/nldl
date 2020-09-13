@@ -13,7 +13,7 @@ enum NetlinkAttributeKind<'a> {
     NoPayload(NetlinkAttributeKindNoPayload<'a>),
     /// Enum variants marked with `nla_type` having some serializable and/or
     /// deserializable associated value.
-    Some(NetlinkAttributeKindSome<'a>),
+    Simple(NetlinkAttributeKindSimple<'a>),
     /// Enum variants marked with `nla_type(_)`. Typically for netlink attributes
     /// with unmatched type ids during deserialization.
     ///
@@ -55,7 +55,7 @@ impl<'a> TryFrom<&'a Variant> for NetlinkAttributeKind<'a> {
 
         match variant.fields.len() {
             0 => Ok(Self::NoPayload(NetlinkAttributeKindNoPayload { ident, ty })),
-            1 => Ok(Self::Some(NetlinkAttributeKindSome { ident, ty })),
+            1 => Ok(Self::Simple(NetlinkAttributeKindSimple { ident, ty })),
             _ => Err(Self::Error::MultipleAssociatedValues {
                 ident: ident.clone(),
             }),
@@ -68,7 +68,7 @@ pub struct NetlinkAttributeKindNoPayload<'a> {
     pub ty: TokenStream,
 }
 
-pub struct NetlinkAttributeKindSome<'a> {
+pub struct NetlinkAttributeKindSimple<'a> {
     pub ident: &'a syn::Ident,
     pub ty: TokenStream,
 }
@@ -83,7 +83,7 @@ pub struct NetlinkAttributeKindUnmarked<'a> {
 
 pub struct PartitionedAttributeKinds<'a> {
     pub no_payload: Vec<NetlinkAttributeKindNoPayload<'a>>,
-    pub some: Vec<NetlinkAttributeKindSome<'a>>,
+    pub simple: Vec<NetlinkAttributeKindSimple<'a>>,
     pub wildcard: Vec<NetlinkAttributeKindWildcard<'a>>,
     pub unmarked: Vec<NetlinkAttributeKindUnmarked<'a>>,
 }
@@ -92,7 +92,7 @@ impl<'a> PartitionedAttributeKinds<'a> {
     pub fn from(data_enum: &'a DataEnum) -> Result<Self, NetlinkAttributeKindFromVariantError> {
         let mut partitioned_variants = Self {
             no_payload: vec![],
-            some: vec![],
+            simple: vec![],
             wildcard: vec![],
             unmarked: vec![],
         };
@@ -101,7 +101,7 @@ impl<'a> PartitionedAttributeKinds<'a> {
             let variant: NetlinkAttributeKind = variant.try_into()?;
             match variant {
                 NetlinkAttributeKind::NoPayload(val) => partitioned_variants.no_payload.push(val),
-                NetlinkAttributeKind::Some(val) => partitioned_variants.some.push(val),
+                NetlinkAttributeKind::Simple(val) => partitioned_variants.simple.push(val),
                 NetlinkAttributeKind::Wildcard(val) => partitioned_variants.wildcard.push(val),
                 NetlinkAttributeKind::Unmarked(val) => partitioned_variants.unmarked.push(val),
             }

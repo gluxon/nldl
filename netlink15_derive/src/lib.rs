@@ -45,9 +45,9 @@ fn impl_netlink_attribute_serializable(ast: &syn::DeriveInput) -> proc_macro2::T
             acc.1.push(attr.ty);
             acc
         });
-    let (some_idents, some_nla_types) =
+    let (simple_idents, simple_nla_types) =
         partitioned_variants
-            .some
+            .simple
             .into_iter()
             .fold((vec![], vec![]), |mut acc, attr| {
                 acc.0.push(attr.ident);
@@ -63,7 +63,7 @@ fn impl_netlink_attribute_serializable(ast: &syn::DeriveInput) -> proc_macro2::T
 
                 match self {
                     #( Self::#no_payload_idents => #no_payload_nla_types, )*
-                    #( Self::#some_idents(_) => #some_nla_types, )*
+                    #( Self::#simple_idents(_) => #simple_nla_types, )*
                     #( Self::#wildcard_ident(a) => NetlinkAttributeSerializable::get_type(a), )*
                 }
             }
@@ -74,7 +74,7 @@ fn impl_netlink_attribute_serializable(ast: &syn::DeriveInput) -> proc_macro2::T
 
                 match self {
                     #( Self::#no_payload_idents => {}, )*
-                    #( Self::#some_idents(val) => NetlinkPayloadRequest::serialize(val, buf), )*
+                    #( Self::#simple_idents(val) => NetlinkPayloadRequest::serialize(val, buf), )*
                     #( Self::#wildcard_ident(a) => NetlinkAttributeSerializable::serialize_payload(a, buf), )*
                 }
             }
