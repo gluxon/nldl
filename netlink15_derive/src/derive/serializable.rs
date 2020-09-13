@@ -1,11 +1,13 @@
 extern crate proc_macro;
 
 use crate::parsing::nla_type::PartitionedAttributeKinds;
+use proc_macro2::TokenStream;
 use quote::quote;
+use syn::{Data, DeriveInput};
 
-pub fn impl_netlink_attribute_serializable(ast: &syn::DeriveInput) -> proc_macro2::TokenStream {
+pub fn impl_netlink_attribute_serializable(ast: &DeriveInput) -> TokenStream {
     let data_enum = match &ast.data {
-        syn::Data::Enum(data_enum) => data_enum,
+        Data::Enum(data_enum) => data_enum,
         _ => panic!("NetlinkAttributeSerializable derive may only be used on enums."),
     };
     let partitioned_variants = PartitionedAttributeKinds::from(data_enum)
