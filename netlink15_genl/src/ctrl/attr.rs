@@ -30,7 +30,7 @@ pub enum ControllerAttributeOperation {
     Id(u32),
     #[nla_type(libc::CTRL_ATTR_OP_FLAGS as u16)]
     Flags(u32),
-    #[nla_type_unknown]
+    #[nla_type(_)]
     Unknown(UnknownAttribute),
 }
 

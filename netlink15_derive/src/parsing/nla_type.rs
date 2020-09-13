@@ -3,7 +3,6 @@ use std::convert::{TryFrom, TryInto};
 use syn::{Attribute, DataEnum, Variant};
 
 const NLA_TYPE_ATTR: &'static str = "nla_type";
-const NLA_TYPE_UNKNOWN_ATTR: &'static str = "nla_type_unknown";
 
 /// Describes Rust enum variants from the perspective of the
 /// `#[derive(NetlinkSerializable)]` and `#[derive(NetlinkDeserializable)]
@@ -15,25 +14,21 @@ enum NetlinkAttributeKind<'a> {
     /// Enum variants marked with `nla_type` having some serializable and/or
     /// deserializable associated value.
     Some(NetlinkAttributeKindSome<'a>),
-    /// Enum variants marked with `nla_type_unknown`. Typically for netlink
-    /// attributes with unmatched type ids during deserialization.
+    /// Enum variants marked with `nla_type(_)`. Typically for netlink attributes
+    /// with unmatched type ids during deserialization.
     ///
-    ///  - There should only ever be one variant marked with `nla_type_unknown`.
+    ///  - There should only ever be one variant marked with `nla_type(_)`.
     ///  - The payload value should always be
     ///    [UnknownPayload](netlink15_core::attr::UnknownAttribute).
     Unknown(NetlinkAttributeKindUnknown<'a>),
-    /// Enum variants without `nla_type` or `nla_type_unknown`.
+    /// Enum variants without `nla_type`.
     Unmarked(NetlinkAttributeKindUnmarked<'a>),
 }
 
 #[derive(thiserror::Error, Debug)]
 pub enum NetlinkAttributeKindFromVariantError {
-    #[error(
-        "Variant \"{ident:?}\" cannot contain both {} and {}",
-        NLA_TYPE_ATTR,
-        NLA_TYPE_UNKNOWN_ATTR
-    )]
-    ContainsNlaTypeAndUnknown { ident: syn::Ident },
+    #[error(transparent)]
+    SynError(#[from] syn::Error),
     #[error("Variant \"{ident:?}\" contains more than one associated value.")]
     MultipleAssociatedValues { ident: syn::Ident },
 }
@@ -43,21 +38,26 @@ impl<'a> TryFrom<&'a Variant> for NetlinkAttributeKind<'a> {
 
     fn try_from(variant: &'a Variant) -> Result<Self, Self::Error> {
         let ident = &variant.ident;
+        let nla_type_attr = (variant.attrs)
+            .iter()
+            .find(|attr| is_nla_type_attr(attr))
+            // .find(|attr| attr.path.is_ident(NLA_TYPE_ATTR))
+            .map(|attr| attr.parse_args::<TokenStream>())
+            .transpose()?;
 
-        let contains_unknown_attr = variant.attrs.iter().any(is_nla_type_unknown_attr);
-        let nla_type_attr = variant.attrs.iter().find_map(find_nla_type_attr);
+        let ty = match nla_type_attr {
+            None => return Ok(Self::Unmarked(NetlinkAttributeKindUnmarked { ident })),
+            Some(ty) => ty,
+        };
 
-        match (nla_type_attr, contains_unknown_attr) {
-            (None, false) => Ok(Self::Unmarked(NetlinkAttributeKindUnmarked { ident })),
-            (None, true) => Ok(Self::Unknown(NetlinkAttributeKindUnknown { ident })),
-            (Some(ty), false) => match variant.fields.len() {
-                0 => Ok(Self::None(NetlinkAttributeKindNone { ident, ty })),
-                1 => Ok(Self::Some(NetlinkAttributeKindSome { ident, ty })),
-                _ => Err(Self::Error::MultipleAssociatedValues {
-                    ident: ident.clone(),
-                }),
-            },
-            (Some(_), true) => Err(Self::Error::ContainsNlaTypeAndUnknown {
+        if is_underscore(ty.clone()) {
+            return Ok(Self::Unknown(NetlinkAttributeKindUnknown { ident }));
+        }
+
+        match variant.fields.len() {
+            0 => Ok(Self::None(NetlinkAttributeKindNone { ident, ty })),
+            1 => Ok(Self::Some(NetlinkAttributeKindSome { ident, ty })),
+            _ => Err(Self::Error::MultipleAssociatedValues {
                 ident: ident.clone(),
             }),
         }
@@ -66,12 +66,12 @@ impl<'a> TryFrom<&'a Variant> for NetlinkAttributeKind<'a> {
 
 pub struct NetlinkAttributeKindNone<'a> {
     pub ident: &'a syn::Ident,
-    pub ty: &'a TokenStream,
+    pub ty: TokenStream,
 }
 
 pub struct NetlinkAttributeKindSome<'a> {
     pub ident: &'a syn::Ident,
-    pub ty: &'a TokenStream,
+    pub ty: TokenStream,
 }
 
 pub struct NetlinkAttributeKindUnknown<'a> {
@@ -112,16 +112,11 @@ impl<'a> PartitionedAttributeKinds<'a> {
     }
 }
 
-fn find_nla_type_attr(attribute: &Attribute) -> Option<&TokenStream> {
-    if attribute.path.is_ident(NLA_TYPE_ATTR) {
-        return Some(&attribute.tokens);
-    }
-    None
+fn is_nla_type_attr(attribute: &Attribute) -> bool {
+    attribute.path.is_ident(NLA_TYPE_ATTR)
 }
 
-fn is_nla_type_unknown_attr(attribute: &Attribute) -> bool {
-    if attribute.path.is_ident(NLA_TYPE_UNKNOWN_ATTR) {
-        return true;
-    }
-    false
+fn is_underscore(tokens: TokenStream) -> bool {
+    let parsed = syn::parse2::<syn::token::Underscore>(tokens);
+    parsed.map(|_| true).unwrap_or(false)
 }

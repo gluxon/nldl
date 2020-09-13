@@ -8,7 +8,7 @@ mod parsing;
 
 // Created following pattern from:
 // https://doc.rust-lang.org/1.46.0/book/ch19-06-macros.html?highlight=procedural,macros#how-to-write-a-custom-derive-macro
-#[proc_macro_derive(NetlinkAttributeSerializable, attributes(nla_type, nla_type_unknown))]
+#[proc_macro_derive(NetlinkAttributeSerializable, attributes(nla_type))]
 pub fn netlink_attribute_serializable_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).expect("Unable to parse DeriveInput from TokenStream");
     impl_netlink_attribute_serializable(&ast).into()
@@ -31,7 +31,7 @@ fn impl_netlink_attribute_serializable(ast: &syn::DeriveInput) -> proc_macro2::T
         [variant] => vec![variant.ident],
         [] => vec![],
         [..] => panic!(
-            "Only 1 variant may be marked with #[nla_type_unknown]. Saw {}",
+            "Only 1 variant may be marked with #[nla_type(_)]. Saw {}",
             partitioned_variants.unknown.len()
         ),
     };
@@ -99,7 +99,7 @@ mod tests {
                 Id(u32),
                 #[nla_type(2)]
                 Flags(u32),
-                #[nla_type_unknown]
+                #[nla_type(_)]
                 Unknown(UnknownPayload)
             }
         };
@@ -138,13 +138,13 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "Only 1 variant may be marked with #[nla_type_unknown]. Saw 2")]
+    #[should_panic(expected = "Only 1 variant may be marked with #[nla_type(_)]. Saw 2")]
     fn multiple_unknowns() {
         let test_enum: DeriveInput = parse_quote! {
             enum TestEnum {
-                #[nla_type_unknown]
+                #[nla_type(_)]
                 Unknown(UnknownPayload),
-                #[nla_type_unknown]
+                #[nla_type(_)]
                 Unknown2(UnknownPayload)
             }
         };
