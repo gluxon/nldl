@@ -18,8 +18,7 @@ enum NetlinkAttributeKind<'a> {
     /// with unmatched type ids during deserialization.
     ///
     ///  - There should only ever be one variant marked with `nla_type(_)`.
-    ///  - The payload value should always be
-    ///    [UnknownPayload](netlink15_core::attr::UnknownAttribute).
+    ///  - The payload value should implement the `NetlinkSerializable` trait.
     Unknown(NetlinkAttributeKindUnknown<'a>),
     /// Enum variants without `nla_type`.
     Unmarked(NetlinkAttributeKindUnmarked<'a>),
