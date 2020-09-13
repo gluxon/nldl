@@ -11,10 +11,10 @@ mod parsing;
 #[proc_macro_derive(NetlinkAttributeSerializable, attributes(nla_type, nla_type_unknown))]
 pub fn netlink_attribute_serializable_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).expect("Unable to parse DeriveInput from TokenStream");
-    impl_netlink_attribute_serializable(&ast)
+    impl_netlink_attribute_serializable(&ast).into()
 }
 
-fn impl_netlink_attribute_serializable(ast: &syn::DeriveInput) -> TokenStream {
+fn impl_netlink_attribute_serializable(ast: &syn::DeriveInput) -> proc_macro2::TokenStream {
     let data_enum = match &ast.data {
         syn::Data::Enum(data_enum) => data_enum,
         _ => panic!("NetlinkAttributeSerializable derive may only be used on enums."),
@@ -56,7 +56,7 @@ fn impl_netlink_attribute_serializable(ast: &syn::DeriveInput) -> TokenStream {
                 acc
             });
 
-    let gen = quote! {
+    quote! {
         impl netlink15_core::attr::NetlinkAttributeSerializable for #name {
 
             fn get_type(&self) -> u16 {
@@ -80,6 +80,5 @@ fn impl_netlink_attribute_serializable(ast: &syn::DeriveInput) -> TokenStream {
                 }
             }
         }
-    };
-    gen.into()
+    }
 }
