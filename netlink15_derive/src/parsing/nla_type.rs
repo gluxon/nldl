@@ -10,7 +10,7 @@ const NLA_TYPE_ATTR: &'static str = "nla_type";
 enum NetlinkAttributeKind<'a> {
     /// Enum variants marked with `nla_type` but with no associated value.
     /// Typically "Unspec" attributes.
-    None(NetlinkAttributeKindNone<'a>),
+    NoPayload(NetlinkAttributeKindNoPayload<'a>),
     /// Enum variants marked with `nla_type` having some serializable and/or
     /// deserializable associated value.
     Some(NetlinkAttributeKindSome<'a>),
@@ -54,7 +54,7 @@ impl<'a> TryFrom<&'a Variant> for NetlinkAttributeKind<'a> {
         }
 
         match variant.fields.len() {
-            0 => Ok(Self::None(NetlinkAttributeKindNone { ident, ty })),
+            0 => Ok(Self::NoPayload(NetlinkAttributeKindNoPayload { ident, ty })),
             1 => Ok(Self::Some(NetlinkAttributeKindSome { ident, ty })),
             _ => Err(Self::Error::MultipleAssociatedValues {
                 ident: ident.clone(),
@@ -63,7 +63,7 @@ impl<'a> TryFrom<&'a Variant> for NetlinkAttributeKind<'a> {
     }
 }
 
-pub struct NetlinkAttributeKindNone<'a> {
+pub struct NetlinkAttributeKindNoPayload<'a> {
     pub ident: &'a syn::Ident,
     pub ty: TokenStream,
 }
@@ -82,7 +82,7 @@ pub struct NetlinkAttributeKindUnmarked<'a> {
 }
 
 pub struct PartitionedAttributeKinds<'a> {
-    pub none: Vec<NetlinkAttributeKindNone<'a>>,
+    pub no_payload: Vec<NetlinkAttributeKindNoPayload<'a>>,
     pub some: Vec<NetlinkAttributeKindSome<'a>>,
     pub wildcard: Vec<NetlinkAttributeKindWildcard<'a>>,
     pub unmarked: Vec<NetlinkAttributeKindUnmarked<'a>>,
@@ -91,7 +91,7 @@ pub struct PartitionedAttributeKinds<'a> {
 impl<'a> PartitionedAttributeKinds<'a> {
     pub fn from(data_enum: &'a DataEnum) -> Result<Self, NetlinkAttributeKindFromVariantError> {
         let mut partitioned_variants = Self {
-            none: vec![],
+            no_payload: vec![],
             some: vec![],
             wildcard: vec![],
             unmarked: vec![],
@@ -100,7 +100,7 @@ impl<'a> PartitionedAttributeKinds<'a> {
         for variant in &data_enum.variants {
             let variant: NetlinkAttributeKind = variant.try_into()?;
             match variant {
-                NetlinkAttributeKind::None(val) => partitioned_variants.none.push(val),
+                NetlinkAttributeKind::NoPayload(val) => partitioned_variants.no_payload.push(val),
                 NetlinkAttributeKind::Some(val) => partitioned_variants.some.push(val),
                 NetlinkAttributeKind::Wildcard(val) => partitioned_variants.wildcard.push(val),
                 NetlinkAttributeKind::Unmarked(val) => partitioned_variants.unmarked.push(val),
