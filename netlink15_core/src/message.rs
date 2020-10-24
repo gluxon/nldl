@@ -1,8 +1,14 @@
+use super::utils::nla_get_string;
+use super::utils::nla_get_u16;
+use super::utils::nla_get_u32;
 use super::utils::nla_put_string;
 use super::utils::nla_put_u16;
 use super::utils::nla_put_u32;
+use super::utils::NlaGetStringError;
+use super::utils::ParseNlaIntError;
 use super::write_to_buf_with_prefixed_u32_len;
-use std::{convert::TryInto, mem::size_of};
+use std::convert::TryInto;
+use std::mem::size_of;
 
 /// Similar to [nlmsghdr][libc::nlmsghdr] and
 /// [RawNetlinkMessageHeader](RawNetlinkMessageHeader) but omits the `len` field.
@@ -117,5 +123,29 @@ impl NetlinkPayloadRequest for u32 {
 impl NetlinkPayloadRequest for String {
     fn serialize(&self, buf: &mut Vec<u8>) {
         nla_put_string(buf, self);
+    }
+}
+
+impl NetlinkPayloadResponse for u16 {
+    type Error = ParseNlaIntError;
+
+    fn deserialize(buf: &[u8]) -> Result<Self, Self::Error> {
+        nla_get_u16(buf)
+    }
+}
+
+impl NetlinkPayloadResponse for u32 {
+    type Error = ParseNlaIntError;
+
+    fn deserialize(buf: &[u8]) -> Result<Self, Self::Error> {
+        nla_get_u32(buf)
+    }
+}
+
+impl NetlinkPayloadResponse for String {
+    type Error = NlaGetStringError;
+
+    fn deserialize(buf: &[u8]) -> Result<Self, Self::Error> {
+        nla_get_string(buf)
     }
 }
