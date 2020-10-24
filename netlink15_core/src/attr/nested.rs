@@ -2,6 +2,8 @@ use super::NestedAttributesDeserializeError;
 use super::NetlinkAttributeDeserializable;
 use crate::message::NetlinkPayloadResponse;
 
+/// Wraps zero or more child netlink attributes. The Netlink attribute type ID
+/// (`nla_type`) for this container will always be `0`.
 #[derive(Debug, PartialEq)]
 pub struct Nested<T>(pub Vec<T>);
 
