@@ -1,9 +1,11 @@
 use super::linux::nlmsg_align;
 use super::message::{NetlinkPayloadRequest, NetlinkPayloadResponse};
-use super::utils::{nla_get_u16, ParseNlaIntError};
+use super::utils::ParseNlaIntError;
 use super::write_to_buf_with_prefixed_u16_len;
-use std::fmt::Debug;
-use std::mem::size_of;
+use std::{convert::TryFrom, fmt::Debug};
+
+mod raw;
+use raw::RawNetlinkAttribute;
 
 pub trait NetlinkAttributeSerializable {
     fn get_type(&self) -> u16;
@@ -51,16 +53,10 @@ impl<T: NetlinkAttributeDeserializable> NetlinkPayloadResponse for Vec<T> {
         let mut view = &buf[..];
 
         while !view.is_empty() {
-            let (header_bytes, remaining) = view.split_at(size_of::<libc::nlattr>());
+            let raw = RawNetlinkAttribute::try_from(view)?;
+            let RawNetlinkAttribute { len, ty, payload } = raw;
 
-            let len = nla_get_u16(&header_bytes[0..size_of::<u16>()]).map(usize::from)?;
-            let ty = nla_get_u16(&header_bytes[size_of::<u16>()..2 * size_of::<u16>()])?;
-            let payload = {
-                let payload_len = len - size_of::<libc::nlattr>();
-                &remaining[..payload_len]
-            };
-
-            view = &view[nlmsg_align(len)..];
+            view = &view[nlmsg_align(usize::from(len))..];
 
             let attr = T::deserialize(ty, payload)
                 .map_err(NestedAttributesDeserializeError::ChildAttributeDeserializeError)?;
