@@ -94,3 +94,14 @@ impl NetlinkAttributeSerializable for UnknownAttribute {
         buf.extend_from_slice(&self.payload[..])
     }
 }
+
+impl NetlinkAttributeDeserializable for UnknownAttribute {
+    type Error = std::convert::Infallible;
+
+    fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {
+        Ok(Self {
+            ty,
+            payload: Vec::from(payload),
+        })
+    }
+}
