@@ -4,7 +4,10 @@ use super::utils::ParseNlaIntError;
 use super::write_to_buf_with_prefixed_u16_len;
 use std::{convert::TryFrom, fmt::Debug};
 
+mod nested;
 mod raw;
+
+pub use nested::Nested;
 use raw::RawNetlinkAttribute;
 
 pub trait NetlinkAttributeSerializable {
@@ -64,18 +67,6 @@ impl<T: NetlinkAttributeDeserializable> NetlinkPayloadResponse for Vec<T> {
         }
 
         Ok(attrs)
-    }
-}
-
-#[derive(Debug, PartialEq)]
-pub struct Nested<T>(pub Vec<T>);
-
-impl<T: NetlinkAttributeDeserializable> NetlinkAttributeDeserializable for Nested<T> {
-    type Error = NestedAttributesDeserializeError<T>;
-
-    fn deserialize(_ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {
-        let attributes: Vec<T> = NetlinkPayloadResponse::deserialize(payload)?;
-        Ok(Self(attributes))
     }
 }
 
