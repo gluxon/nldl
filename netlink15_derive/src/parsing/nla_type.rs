@@ -40,7 +40,6 @@ impl<'a> TryFrom<&'a Variant> for NetlinkAttributeKind<'a> {
         let nla_type_attr = (variant.attrs)
             .iter()
             .find(|attr| is_nla_type_attr(attr))
-            // .find(|attr| attr.path.is_ident(NLA_TYPE_ATTR))
             .map(|attr| attr.parse_args::<TokenStream>())
             .transpose()?;
 
