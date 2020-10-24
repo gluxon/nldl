@@ -23,8 +23,8 @@ impl GenericNetlinkHeader {
 
     fn deserialize(buf: [u8; size_of::<libc::genlmsghdr>()]) -> Self {
         Self {
-            cmd: buf.get(0).unwrap().clone(),
-            version: buf.get(1).unwrap().clone(),
+            cmd: *buf.get(0).unwrap(),
+            version: *buf.get(1).unwrap(),
         }
     }
 }

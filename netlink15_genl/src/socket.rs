@@ -66,5 +66,5 @@ impl GenlSocket {
 
 /// Some SockProtocol values aren't bound by nix yet.
 fn transmute_to_sock_protocol(value: libc::c_int) -> SockProtocol {
-    return unsafe { std::mem::transmute::<libc::c_int, SockProtocol>(value) };
+    unsafe { std::mem::transmute::<libc::c_int, SockProtocol>(value) }
 }

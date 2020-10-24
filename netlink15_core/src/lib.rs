@@ -11,7 +11,7 @@ use message::*;
 pub fn serialize<T: NetlinkPayloadRequest>(message: &NetlinkMessageRequest<T>) -> Vec<u8> {
     let mut bytes = vec![];
     message.serialize(&mut bytes);
-    return bytes;
+    bytes
 }
 
 fn write_to_buf_with_prefixed_u32_len<F>(mut buf: &mut Vec<u8>, write: F)

@@ -2,7 +2,7 @@ use proc_macro2::TokenStream;
 use std::convert::{TryFrom, TryInto};
 use syn::{Attribute, DataEnum, Variant};
 
-const NLA_TYPE_ATTR: &'static str = "nla_type";
+const NLA_TYPE_ATTR: &str = "nla_type";
 
 /// Describes Rust enum variants from the perspective of the
 /// `#[derive(NetlinkSerializable)]` and `#[derive(NetlinkDeserializable)]

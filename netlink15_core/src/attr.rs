@@ -50,7 +50,7 @@ impl<T: NetlinkAttributeDeserializable> NetlinkPayloadResponse for Vec<T> {
         let mut attrs = vec![];
         let mut view = &buf[..];
 
-        while view.len() > 0 {
+        while !view.is_empty() {
             let (header_bytes, remaining) = view.split_at(size_of::<libc::nlattr>());
 
             let len = nla_get_u16(&header_bytes[0..size_of::<u16>()]).map(usize::from)?;
@@ -67,7 +67,7 @@ impl<T: NetlinkAttributeDeserializable> NetlinkPayloadResponse for Vec<T> {
             attrs.push(attr);
         }
 
-        return Ok(attrs);
+        Ok(attrs)
     }
 }
 
