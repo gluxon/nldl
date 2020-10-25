@@ -1,6 +1,6 @@
-use super::NestedAttributesDeserializeError;
 use super::NetlinkAttributeDeserializable;
 use super::NetlinkAttributeSerializable;
+use super::ParseNetlinkAttributeFromBufferError;
 use crate::message::NetlinkPayloadRequest;
 use crate::message::NetlinkPayloadResponse;
 
@@ -22,7 +22,7 @@ impl<T: NetlinkAttributeSerializable> NetlinkAttributeSerializable for Nested<T>
 }
 
 impl<T: NetlinkAttributeDeserializable> NetlinkAttributeDeserializable for Nested<T> {
-    type Error = NestedAttributesDeserializeError<T>;
+    type Error = ParseNetlinkAttributeFromBufferError<T>;
 
     fn deserialize(_ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {
         let attributes: Vec<T> = NetlinkPayloadResponse::deserialize(payload)?;

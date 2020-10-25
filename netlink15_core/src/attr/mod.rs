@@ -57,23 +57,14 @@ pub enum ParseNetlinkAttributeFromBufferError<T: NetlinkAttributeDeserializable>
     )]
     PartitionBufferError(#[from] ParseRawNetlinkAttributeError),
 
+    // There's a cryptic compiler error message when #[error(transparent)] is
+    // set on the generic below.
     #[error("{0}")]
     AttributeDeserializeError(T::Error),
 }
 
-#[derive(thiserror::Error, Debug)]
-pub enum NestedAttributesDeserializeError<T: NetlinkAttributeDeserializable> {
-    #[error(transparent)]
-    ParseRawNetlinkAttributeError(#[from] ParseRawNetlinkAttributeError),
-
-    // There's a cryptic compiler error message when #[error(transparent)] is
-    // set on the generic below.
-    #[error("{0}")]
-    ChildAttributeDeserializeError(T::Error),
-}
-
 impl<T: NetlinkAttributeDeserializable> NetlinkPayloadResponse for Vec<T> {
-    type Error = NestedAttributesDeserializeError<T>;
+    type Error = ParseNetlinkAttributeFromBufferError<T>;
 
     fn deserialize(buf: &[u8]) -> Result<Self, Self::Error> {
         let mut attrs = vec![];
@@ -86,7 +77,7 @@ impl<T: NetlinkAttributeDeserializable> NetlinkPayloadResponse for Vec<T> {
             view = &view[nlmsg_align(usize::from(len))..];
 
             let attr = T::deserialize(ty, payload)
-                .map_err(NestedAttributesDeserializeError::ChildAttributeDeserializeError)?;
+                .map_err(ParseNetlinkAttributeFromBufferError::AttributeDeserializeError)?;
             attrs.push(attr);
         }
 
