@@ -63,6 +63,31 @@ mod tests {
     use std::{convert::TryFrom, mem::size_of};
 
     #[test]
+    fn padded_buffer() {
+        assert_eq!(
+            RawNetlinkAttribute::try_from(&[7, 0, 0, 0, 1, 1, 1, 0][..]),
+            Ok(RawNetlinkAttribute {
+                len: 7,
+                ty: 0,
+                payload: &[1, 1, 1]
+            })
+        );
+    }
+
+    #[test]
+    fn multiple_attributes() {
+        assert_eq!(
+            RawNetlinkAttribute::try_from(&[8, 0, 1, 0, 1, 1, 1, 1, 8, 0, 2, 0, 2, 2, 2, 2][..]),
+            Ok(RawNetlinkAttribute {
+                len: 8,
+                ty: 1,
+                payload: &[1, 1, 1, 1]
+            }),
+            "Only first attribute should be read from the buffer, safely ignoring extra data. This is the stated behavior in the method's documentation."
+        );
+    }
+
+    #[test]
     fn incomplete_header_detection() {
         assert_eq!(
             size_of::<libc::nlattr>(),
