@@ -1,5 +1,5 @@
-use super::socket::GenlSocket;
 use attr::ControllerAttribute;
+use netlink15_genl::socket::GenlSocket;
 
 pub mod attr;
 mod get_family;

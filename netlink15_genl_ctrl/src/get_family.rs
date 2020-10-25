@@ -1,5 +1,5 @@
 use super::attr::ControllerAttribute;
-use crate::{socket::GenlSocket, GenericNetlinkHeader, GenericNetlinkRequest};
+use netlink15_genl::{socket::GenlSocket, GenericNetlinkHeader, GenericNetlinkRequest};
 
 pub fn get_family(sock: &GenlSocket, family_name: String) -> nix::Result<Vec<ControllerAttribute>> {
     let genl_request = GenericNetlinkRequest {
@@ -18,15 +18,15 @@ pub fn get_family(sock: &GenlSocket, family_name: String) -> nix::Result<Vec<Con
 
 #[cfg(test)]
 mod tests {
-    use crate::ctrl::attr::ControllerAttribute;
-    use crate::ctrl::attr::ControllerAttributeMulticastGroup;
-    use crate::GenericNetlinkHeader;
-    use crate::GenericNetlinkRequest;
-    use crate::GenericNetlinkResponse;
+    use crate::attr::ControllerAttribute;
+    use crate::attr::ControllerAttributeMulticastGroup;
     use netlink15_core::{
         attr::Nested,
         message::{NetlinkPayloadRequest, NetlinkPayloadResponse},
     };
+    use netlink15_genl::GenericNetlinkHeader;
+    use netlink15_genl::GenericNetlinkRequest;
+    use netlink15_genl::GenericNetlinkResponse;
 
     /// genl ctrl get name acpi_event
     #[test]
