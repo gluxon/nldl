@@ -1,6 +1,5 @@
 use super::linux::nlmsg_align;
 use super::message::{NetlinkPayloadRequest, NetlinkPayloadResponse};
-use super::utils::ParseNlaIntError;
 use super::write_to_buf_with_prefixed_u16_len;
 use std::{convert::TryFrom, fmt::Debug};
 
@@ -9,6 +8,7 @@ mod raw;
 mod unknown;
 
 pub use nested::Nested;
+pub use raw::ParseRawNetlinkAttributeError;
 use raw::RawNetlinkAttribute;
 pub use unknown::UnknownAttribute;
 
@@ -55,7 +55,7 @@ pub enum ParseNetlinkAttributeFromBufferError<T: NetlinkAttributeDeserializable>
         "An error occurred partitioning a buffer into netlink attribute
     #(len, type, payload) fields: {0}"
     )]
-    PartitionBufferError(#[from] ParseNlaIntError),
+    PartitionBufferError(#[from] ParseRawNetlinkAttributeError),
 
     #[error("{0}")]
     AttributeDeserializeError(T::Error),
@@ -64,7 +64,7 @@ pub enum ParseNetlinkAttributeFromBufferError<T: NetlinkAttributeDeserializable>
 #[derive(thiserror::Error, Debug)]
 pub enum NestedAttributesDeserializeError<T: NetlinkAttributeDeserializable> {
     #[error(transparent)]
-    ParseNlaIntError(#[from] ParseNlaIntError),
+    ParseRawNetlinkAttributeError(#[from] ParseRawNetlinkAttributeError),
 
     // There's a cryptic compiler error message when #[error(transparent)] is
     // set on the generic below.
