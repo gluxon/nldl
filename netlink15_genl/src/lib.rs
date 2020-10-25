@@ -1,7 +1,6 @@
 use netlink15_core::message::{NetlinkPayloadRequest, NetlinkPayloadResponse};
 use std::mem::size_of;
 
-pub mod ctrl;
 pub mod socket;
 
 /// See [genlmsghdr](libc::genlmsghdr)

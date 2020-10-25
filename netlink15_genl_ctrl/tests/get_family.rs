@@ -1,6 +1,6 @@
-use netlink15_genl::ctrl::attr::ControllerAttribute;
-use netlink15_genl::ctrl::NetlinkGenericController;
 use netlink15_genl::socket::GenlSocket;
+use netlink15_genl_ctrl::attr::ControllerAttribute;
+use netlink15_genl_ctrl::NetlinkGenericController;
 
 #[test]
 fn get_nlctrl_id() -> anyhow::Result<()> {
