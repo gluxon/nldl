@@ -31,12 +31,34 @@ impl<T: NetlinkAttributeSerializable> NetlinkPayloadRequest for T {
     }
 }
 
+impl<T: NetlinkAttributeDeserializable> NetlinkPayloadResponse for T {
+    type Error = ParseNetlinkAttributeFromBufferError<T>;
+
+    fn deserialize(buf: &[u8]) -> Result<Self, Self::Error> {
+        let raw = RawNetlinkAttribute::try_from(buf)?;
+        NetlinkAttributeDeserializable::deserialize(raw.ty, raw.payload)
+            .map_err(ParseNetlinkAttributeFromBufferError::AttributeDeserializeError)
+    }
+}
+
 impl<T: NetlinkAttributeSerializable> NetlinkPayloadRequest for Vec<T> {
     fn serialize(&self, buf: &mut Vec<u8>) {
         for attr in self {
             attr.serialize(buf);
         }
     }
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum ParseNetlinkAttributeFromBufferError<T: NetlinkAttributeDeserializable> {
+    #[error(
+        "An error occurred partitioning a buffer into netlink attribute
+    #(len, type, payload) fields: {0}"
+    )]
+    PartitionBufferError(#[from] ParseNlaIntError),
+
+    #[error("{0}")]
+    AttributeDeserializeError(T::Error),
 }
 
 #[derive(thiserror::Error, Debug)]
