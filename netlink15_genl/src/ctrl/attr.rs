@@ -1,82 +1,74 @@
-use netlink15_core::attr::{
-    Nested, NetlinkAttributeDeserializable, NetlinkAttributeSerializable, UnknownAttribute,
-};
-use netlink15_core::utils::nla_get_string;
-use netlink15_core::utils::nla_get_u16;
-use netlink15_core::utils::nla_get_u32;
+use netlink15_core::attr::{Nested, ParseNetlinkAttributeFromBufferError, UnknownAttribute};
 use netlink15_core::utils::NlaGetStringError;
 use netlink15_core::utils::ParseNlaIntError;
+use netlink15_derive::NetlinkAttributeDeserializable;
 use netlink15_derive::NetlinkAttributeSerializable;
 
+const CTRL_ATTR_UNSPEC: u16 = libc::CTRL_ATTR_UNSPEC as u16;
+const CTRL_ATTR_FAMILY_ID: u16 = libc::CTRL_ATTR_FAMILY_ID as u16;
+const CTRL_ATTR_FAMILY_NAME: u16 = libc::CTRL_ATTR_FAMILY_NAME as u16;
+const CTRL_ATTR_VERSION: u16 = libc::CTRL_ATTR_VERSION as u16;
+const CTRL_ATTR_HDRSIZE: u16 = libc::CTRL_ATTR_HDRSIZE as u16;
+const CTRL_ATTR_MAXATTR: u16 = libc::CTRL_ATTR_MAXATTR as u16;
+const CTRL_ATTR_OPS: u16 = libc::CTRL_ATTR_OPS as u16;
+const CTRL_ATTR_MCAST_GROUPS: u16 = libc::CTRL_ATTR_MCAST_GROUPS as u16;
+
 // https://www.infradead.org/~tgr/libnl/doc/api/ctrl_8c_source.html#l00043
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, NetlinkAttributeSerializable, NetlinkAttributeDeserializable)]
+#[netlink15(deserialize(error = "ControllerAttributeDeserializeError"))]
 pub enum ControllerAttribute {
+    #[nla_type(CTRL_ATTR_UNSPEC)]
     Unspec,
+    #[nla_type(CTRL_ATTR_FAMILY_ID)]
     FamilyId(u16),
+    #[nla_type(CTRL_ATTR_FAMILY_NAME)]
     FamilyName(String),
+    #[nla_type(CTRL_ATTR_VERSION)]
     Version(u32),
+    #[nla_type(CTRL_ATTR_HDRSIZE)]
     HeaderSize(u32),
+    #[nla_type(CTRL_ATTR_MAXATTR)]
     MaxAttr(u32),
+    #[nla_type(CTRL_ATTR_OPS)]
     Operations(Nested<ControllerAttributeOperation>),
+    #[nla_type(CTRL_ATTR_MCAST_GROUPS)]
     MulticastGroups(Nested<ControllerAttributeMulticastGroup>),
-    Unknown { ty: u16, payload: Vec<u8> },
+    #[nla_type(_)]
+    Unknown(UnknownAttribute),
 }
 
-#[derive(Debug, PartialEq, NetlinkAttributeSerializable)]
+const CTRL_ATTR_OP_UNSPEC: u16 = libc::CTRL_ATTR_OP_UNSPEC as u16;
+const CTRL_ATTR_OP_ID: u16 = libc::CTRL_ATTR_OP_ID as u16;
+const CTRL_ATTR_OP_FLAGS: u16 = libc::CTRL_ATTR_OP_FLAGS as u16;
+
+#[derive(Debug, PartialEq, NetlinkAttributeSerializable, NetlinkAttributeDeserializable)]
+#[netlink15(deserialize(error = "ParseNlaIntError"))]
 pub enum ControllerAttributeOperation {
-    #[nla_type(libc::CTRL_ATTR_OP_UNSPEC as u16)]
+    #[nla_type(CTRL_ATTR_OP_UNSPEC)]
     Unspec,
-    #[nla_type(libc::CTRL_ATTR_OP_ID as u16)]
+    #[nla_type(CTRL_ATTR_OP_ID)]
     Id(u32),
-    #[nla_type(libc::CTRL_ATTR_OP_FLAGS as u16)]
+    #[nla_type(CTRL_ATTR_OP_FLAGS)]
     Flags(u32),
     #[nla_type(_)]
     Unknown(UnknownAttribute),
 }
 
-#[derive(Debug, PartialEq)]
+const CTRL_ATTR_MCAST_GRP_UNSPEC: u16 = libc::CTRL_ATTR_MCAST_GRP_UNSPEC as u16;
+const CTRL_ATTR_MCAST_GRP_NAME: u16 = libc::CTRL_ATTR_MCAST_GRP_NAME as u16;
+const CTRL_ATTR_MCAST_GRP_ID: u16 = libc::CTRL_ATTR_MCAST_GRP_ID as u16;
+
+#[derive(Debug, PartialEq, NetlinkAttributeSerializable, NetlinkAttributeDeserializable)]
+#[netlink15(deserialize(error = "ControllerAttributeMulticastGroupDeserializeError"))]
 pub enum ControllerAttributeMulticastGroup {
+    #[nla_type(CTRL_ATTR_MCAST_GRP_UNSPEC)]
     Unspec,
+    #[nla_type(CTRL_ATTR_MCAST_GRP_NAME)]
     Name(String),
+    #[nla_type(CTRL_ATTR_MCAST_GRP_ID)]
     Id(u32),
-    Unknown { ty: u16, payload: Vec<u8> },
-}
-
-impl NetlinkAttributeSerializable for ControllerAttribute {
-    fn get_type(&self) -> u16 {
-        match self {
-            ControllerAttribute::Unspec => libc::CTRL_ATTR_UNSPEC as u16,
-            ControllerAttribute::FamilyId(_) => libc::CTRL_ATTR_FAMILY_ID as u16,
-            ControllerAttribute::FamilyName(_) => libc::CTRL_ATTR_FAMILY_NAME as u16,
-            ControllerAttribute::Version(_) => libc::CTRL_ATTR_VERSION as u16,
-            ControllerAttribute::HeaderSize(_) => libc::CTRL_ATTR_HDRSIZE as u16,
-            ControllerAttribute::MaxAttr(_) => libc::CTRL_ATTR_MAXATTR as u16,
-            ControllerAttribute::Operations(_) => libc::CTRL_ATTR_OPS as u16,
-            ControllerAttribute::MulticastGroups(_) => libc::CTRL_ATTR_MCAST_GROUPS as u16,
-            ControllerAttribute::Unknown { ty, payload: _ } => *ty,
-        }
-    }
-
-    fn serialize_payload(&self, buf: &mut Vec<u8>) {
-        match self {
-            ControllerAttribute::Unspec => {}
-            ControllerAttribute::FamilyId(family_id) => {
-                buf.extend_from_slice(&family_id.to_ne_bytes()[..]);
-            }
-            ControllerAttribute::FamilyName(family_name) => {
-                buf.extend_from_slice(family_name.as_bytes());
-                buf.push(0);
-            }
-            ControllerAttribute::Version(_) => todo!(),
-            ControllerAttribute::HeaderSize(_) => todo!(),
-            ControllerAttribute::MaxAttr(_) => todo!(),
-            ControllerAttribute::Operations(_) => todo!(),
-            ControllerAttribute::MulticastGroups(_) => todo!(),
-            ControllerAttribute::Unknown { ty: _, payload } => {
-                buf.extend_from_slice(payload);
-            }
-        };
-    }
+    #[nla_type(_)]
+    Unknown(UnknownAttribute),
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -85,53 +77,22 @@ pub enum ControllerAttributeDeserializeError {
     ParseNlaIntError(#[from] ParseNlaIntError),
     #[error(transparent)]
     NlaGetStringError(#[from] NlaGetStringError),
+    #[error(transparent)]
+    DeserializeOperationError(
+        #[from] ParseNetlinkAttributeFromBufferError<Nested<ControllerAttributeOperation>>,
+    ),
+    #[error(transparent)]
+    DeserializeMulticastGroupError(
+        #[from] ParseNetlinkAttributeFromBufferError<Nested<ControllerAttributeMulticastGroup>>,
+    ),
 }
 
-impl NetlinkAttributeDeserializable for ControllerAttribute {
-    type Error = ControllerAttributeDeserializeError;
-
-    fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {
-        let attr = match ty.into() {
-            libc::CTRL_ATTR_UNSPEC => ControllerAttribute::Unspec,
-            libc::CTRL_ATTR_FAMILY_ID => ControllerAttribute::FamilyId(nla_get_u16(payload)?),
-            libc::CTRL_ATTR_FAMILY_NAME => {
-                ControllerAttribute::FamilyName(nla_get_string(payload)?)
-            }
-            libc::CTRL_ATTR_VERSION => ControllerAttribute::Version(nla_get_u32(payload)?),
-            libc::CTRL_ATTR_HDRSIZE => ControllerAttribute::HeaderSize(nla_get_u32(payload)?),
-            libc::CTRL_ATTR_MAXATTR => ControllerAttribute::MaxAttr(nla_get_u32(payload)?),
-            libc::CTRL_ATTR_OPS => ControllerAttribute::Operations(
-                NetlinkAttributeDeserializable::deserialize(0, &payload[4..]).unwrap(),
-            ),
-            libc::CTRL_ATTR_MCAST_GROUPS => ControllerAttribute::MulticastGroups(
-                NetlinkAttributeDeserializable::deserialize(0, &payload[4..]).unwrap(),
-            ),
-            _ => ControllerAttribute::Unknown {
-                ty,
-                payload: payload.into(),
-            },
-        };
-
-        Ok(attr)
-    }
-}
-
-impl NetlinkAttributeDeserializable for ControllerAttributeOperation {
-    type Error = ParseNlaIntError;
-
-    fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {
-        let attr = match ty.into() {
-            libc::CTRL_ATTR_OP_UNSPEC => ControllerAttributeOperation::Unspec,
-            libc::CTRL_ATTR_OP_ID => ControllerAttributeOperation::Id(nla_get_u32(payload)?),
-            libc::CTRL_ATTR_OP_FLAGS => ControllerAttributeOperation::Flags(nla_get_u32(payload)?),
-            _ => ControllerAttributeOperation::Unknown(UnknownAttribute {
-                ty,
-                payload: payload.into(),
-            }),
-        };
-
-        Ok(attr)
-    }
+#[derive(thiserror::Error, Debug)]
+pub enum ControllerAttributeMulticastGroupDeserializeError {
+    #[error(transparent)]
+    ParseNlaIntError(#[from] ParseNlaIntError),
+    #[error(transparent)]
+    NlaGetStringError(#[from] NlaGetStringError),
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -140,26 +101,4 @@ pub enum ControllerAttributeOperationDeserializeError {
     ParseNlaIntError(#[from] ParseNlaIntError),
     #[error(transparent)]
     NlaGetStringError(#[from] NlaGetStringError),
-}
-
-impl NetlinkAttributeDeserializable for ControllerAttributeMulticastGroup {
-    type Error = ControllerAttributeOperationDeserializeError;
-
-    fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {
-        let attr = match ty.into() {
-            libc::CTRL_ATTR_MCAST_GRP_UNSPEC => ControllerAttributeMulticastGroup::Unspec,
-            libc::CTRL_ATTR_MCAST_GRP_NAME => {
-                ControllerAttributeMulticastGroup::Name(nla_get_string(payload)?)
-            }
-            libc::CTRL_ATTR_MCAST_GRP_ID => {
-                ControllerAttributeMulticastGroup::Id(nla_get_u32(payload)?)
-            }
-            _ => ControllerAttributeMulticastGroup::Unknown {
-                ty,
-                payload: payload.into(),
-            },
-        };
-
-        Ok(attr)
-    }
 }
