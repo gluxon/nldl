@@ -17,6 +17,8 @@ pub(crate) struct RawNetlinkAttribute<'a> {
 pub enum ParseRawNetlinkAttributeError {
     #[error("Found a netlink attribute with an incomplete header. Saw {len} bytes, but at least {} were expected", size_of::<libc::nlattr>())]
     IncompleteHeader { len: usize },
+    #[error("Found a netlink attribute with an insufficiently sized payload buffer. Expected a payload with {expected} bytes (determined from the header) but saw {actual} bytes.")]
+    UnexpectedEndOfPayloadBuffer { actual: usize, expected: usize },
     #[error(transparent)]
     ParseNlaIntError(#[from] ParseNlaIntError),
 }
@@ -26,13 +28,10 @@ impl<'a> TryFrom<&'a [u8]> for RawNetlinkAttribute<'a> {
 
     /// Reads the first 2 bytes from a buffer to determine the Netlink
     /// Attribute's length. The length bytes are interpreted with the host's
-    /// natural endianness. This method will panic if the buffer is shorter than
-    /// expected.
+    /// natural endianness.
     ///
     /// It's acceptable to pass a longer buffer than necessary. The remaining
     /// bytes beyond the retrieved length will be ignored.
-    // TODO: Make this not panic if the buffer is shorter than the expected
-    // payload.
     fn try_from(buf: &'a [u8]) -> Result<Self, Self::Error> {
         if buf.len() < size_of::<libc::nlattr>() {
             return Err(Self::Error::IncompleteHeader { len: buf.len() });
@@ -44,6 +43,13 @@ impl<'a> TryFrom<&'a [u8]> for RawNetlinkAttribute<'a> {
         let ty = nla_get_u16(&header_bytes[size_of::<u16>()..2 * size_of::<u16>()])?;
         let payload = {
             let payload_len = usize::from(len) - size_of::<libc::nlattr>();
+            if remaining.len() < payload_len {
+                return Err(Self::Error::UnexpectedEndOfPayloadBuffer {
+                    actual: remaining.len(),
+                    expected: payload_len,
+                });
+            }
+
             &remaining[..payload_len]
         };
 
@@ -78,5 +84,37 @@ mod tests {
             RawNetlinkAttribute::try_from(&[5, 0, 0, 0, 1][..]),
             Err(ParseRawNetlinkAttributeError::IncompleteHeader { len: _ })
         ));
+    }
+
+    #[test]
+    fn incomplete_payload_detection() {
+        assert_eq!(
+            RawNetlinkAttribute::try_from(&[8, 0, 0, 0, 1, 1, 1, 1][..]),
+            Ok(RawNetlinkAttribute {
+                len: 8,
+                ty: 0,
+                payload: &[1, 1, 1, 1]
+            })
+        );
+
+        assert_eq!(
+            RawNetlinkAttribute::try_from(&[9, 0, 0, 0, 1, 1, 1, 1][..]),
+            Err(
+                ParseRawNetlinkAttributeError::UnexpectedEndOfPayloadBuffer {
+                    actual: 4,
+                    expected: 5
+                }
+            )
+        );
+
+        assert_eq!(
+            RawNetlinkAttribute::try_from(&[10, 0, 0, 0, 1, 1, 1, 1][..]),
+            Err(
+                ParseRawNetlinkAttributeError::UnexpectedEndOfPayloadBuffer {
+                    actual: 4,
+                    expected: 6
+                }
+            )
+        );
     }
 }
