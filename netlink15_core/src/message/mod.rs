@@ -10,6 +10,8 @@ use super::write_to_buf_with_prefixed_u32_len;
 use std::convert::TryInto;
 use std::mem::size_of;
 
+mod raw;
+
 /// Similar to [nlmsghdr][libc::nlmsghdr] and
 /// [RawNetlinkMessageHeader](RawNetlinkMessageHeader) but omits the `len` field.
 pub struct NetlinkMessageHeader {
@@ -39,6 +41,7 @@ impl From<RawNetlinkMessageHeader> for NetlinkMessageHeader {
     }
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub struct RawNetlinkMessageHeader {
     pub len: u32,
     pub ty: u16,
@@ -48,7 +51,7 @@ pub struct RawNetlinkMessageHeader {
 }
 
 impl RawNetlinkMessageHeader {
-    fn deserialize(buf: [u8; size_of::<libc::nlmsghdr>()]) -> Self {
+    fn deserialize(buf: &[u8; size_of::<libc::nlmsghdr>()]) -> Self {
         Self {
             len: u32::from_ne_bytes((&buf[0..4]).try_into().unwrap()),
             ty: u16::from_ne_bytes((&buf[4..6]).try_into().unwrap()),
@@ -88,7 +91,7 @@ impl<T: NetlinkPayloadResponse> NetlinkMessageResponse<T> {
             arr
         };
 
-        let raw_header = RawNetlinkMessageHeader::deserialize(header_bytes);
+        let raw_header = RawNetlinkMessageHeader::deserialize(&header_bytes);
         let len = raw_header.len;
         let header: NetlinkMessageHeader = raw_header.into();
 
