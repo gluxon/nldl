@@ -1,3 +1,5 @@
+use self::raw::RawNetlinkMessage;
+use self::raw::ReadRawNetlinkMessageError;
 use super::utils::nla_get_string;
 use super::utils::nla_get_u16;
 use super::utils::nla_get_u32;
@@ -7,7 +9,9 @@ use super::utils::nla_put_u32;
 use super::utils::NlaGetStringError;
 use super::utils::ParseNlaIntError;
 use super::write_to_buf_with_prefixed_u32_len;
+use std::convert::TryFrom;
 use std::convert::TryInto;
+use std::fmt::Debug;
 use std::mem::size_of;
 
 mod raw;
@@ -81,22 +85,23 @@ pub struct NetlinkMessageResponse<T: NetlinkPayloadResponse> {
     pub payload: T,
 }
 
+#[derive(thiserror::Error, Debug, PartialEq)]
+pub enum NetlinkMessageResponseDeserializeError<T: NetlinkPayloadResponse> {
+    #[error(transparent)]
+    RawReadError(#[from] ReadRawNetlinkMessageError),
+
+    // There's a cryptic compiler error message when #[error(transparent)] is
+    // set on the generic below.
+    #[error("{0}")]
+    PayloadDeserialize(T::Error),
+}
+
 impl<T: NetlinkPayloadResponse> NetlinkMessageResponse<T> {
-    pub fn deserialize(buf: &[u8]) -> Result<Self, T::Error> {
-        let (header_bytes, payload_bytes) = buf.split_at(size_of::<libc::nlmsghdr>());
-
-        let header_bytes = {
-            let mut arr: [u8; size_of::<libc::nlmsghdr>()] = Default::default();
-            arr.clone_from_slice(&header_bytes);
-            arr
-        };
-
-        let raw_header = RawNetlinkMessageHeader::deserialize(&header_bytes);
-        let len = raw_header.len;
-        let header: NetlinkMessageHeader = raw_header.into();
-
-        let payload_len = (len as usize) - size_of::<libc::nlmsghdr>();
-        let payload = T::deserialize(&payload_bytes[..payload_len])?;
+    pub fn deserialize(buf: &[u8]) -> Result<Self, NetlinkMessageResponseDeserializeError<T>> {
+        let raw = RawNetlinkMessage::try_from(buf)?;
+        let header = raw.header.into();
+        let payload = T::deserialize(&raw.payload)
+            .map_err(NetlinkMessageResponseDeserializeError::PayloadDeserialize)?;
 
         Ok(Self { header, payload })
     }
@@ -106,8 +111,8 @@ pub trait NetlinkPayloadRequest {
     fn serialize(&self, buf: &mut Vec<u8>);
 }
 
-pub trait NetlinkPayloadResponse: PartialEq + Sized {
-    type Error: std::fmt::Debug;
+pub trait NetlinkPayloadResponse: Debug + PartialEq + Sized {
+    type Error: Debug + std::error::Error;
     fn deserialize(buf: &[u8]) -> Result<Self, Self::Error>;
 }
 
