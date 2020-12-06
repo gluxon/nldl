@@ -1,4 +1,11 @@
-use syn::{Attribute, DeriveInput, Lit, LitStr, Meta, MetaList, MetaNameValue, NestedMeta};
+use syn::Attribute;
+use syn::DeriveInput;
+use syn::Lit;
+use syn::LitStr;
+use syn::Meta;
+use syn::MetaList;
+use syn::MetaNameValue;
+use syn::NestedMeta;
 
 pub const CRATE_ATTR: &str = "netlink15";
 

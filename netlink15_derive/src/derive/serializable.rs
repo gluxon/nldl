@@ -3,7 +3,8 @@ extern crate proc_macro;
 use crate::parsing::nla_type::PartitionedAttributeKinds;
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{Data, DeriveInput};
+use syn::Data;
+use syn::DeriveInput;
 
 pub fn impl_netlink_attribute_serializable(ast: &DeriveInput) -> TokenStream {
     let data_enum = match &ast.data {

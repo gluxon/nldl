@@ -1,5 +1,7 @@
 use super::attr::ControllerAttribute;
-use netlink15_genl::{socket::GenlSocket, GenericNetlinkHeader, GenericNetlinkRequest};
+use netlink15_genl::socket::GenlSocket;
+use netlink15_genl::GenericNetlinkHeader;
+use netlink15_genl::GenericNetlinkRequest;
 
 pub fn get_family(sock: &GenlSocket, family_name: String) -> nix::Result<Vec<ControllerAttribute>> {
     let genl_request = GenericNetlinkRequest {

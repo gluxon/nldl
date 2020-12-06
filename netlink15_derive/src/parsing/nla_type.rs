@@ -1,6 +1,9 @@
 use proc_macro2::TokenStream;
-use std::convert::{TryFrom, TryInto};
-use syn::{Attribute, DataEnum, Variant};
+use std::convert::TryFrom;
+use std::convert::TryInto;
+use syn::Attribute;
+use syn::DataEnum;
+use syn::Variant;
 
 const NLA_TYPE_ATTR: &str = "nla_type";
 

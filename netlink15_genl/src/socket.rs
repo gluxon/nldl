@@ -1,11 +1,19 @@
-use super::{GenericNetlinkRequest, GenericNetlinkResponse};
-use netlink15_core::message::{
-    NetlinkMessageHeader, NetlinkMessageRequest, NetlinkMessageResponse, NetlinkPayloadRequest,
-    NetlinkPayloadResponse,
-};
-use nix::sys::socket::{
-    bind, socket, AddressFamily, MsgFlags, NetlinkAddr, SockAddr, SockFlag, SockProtocol, SockType,
-};
+use super::GenericNetlinkRequest;
+use super::GenericNetlinkResponse;
+use netlink15_core::message::NetlinkMessageHeader;
+use netlink15_core::message::NetlinkMessageRequest;
+use netlink15_core::message::NetlinkMessageResponse;
+use netlink15_core::message::NetlinkPayloadRequest;
+use netlink15_core::message::NetlinkPayloadResponse;
+use nix::sys::socket::bind;
+use nix::sys::socket::socket;
+use nix::sys::socket::AddressFamily;
+use nix::sys::socket::MsgFlags;
+use nix::sys::socket::NetlinkAddr;
+use nix::sys::socket::SockAddr;
+use nix::sys::socket::SockFlag;
+use nix::sys::socket::SockProtocol;
+use nix::sys::socket::SockType;
 use std::os::unix::io::RawFd;
 
 pub struct GenlSocket {

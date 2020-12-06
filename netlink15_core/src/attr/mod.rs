@@ -1,7 +1,11 @@
 use super::linux::nlmsg_align;
-use super::message::{NetlinkPayloadRequest, NetlinkPayloadResponse};
+use super::message::NetlinkPayloadRequest;
+use super::message::NetlinkPayloadResponse;
 use super::write_to_buf_with_prefixed_u16_len;
-use std::{convert::TryFrom, fmt::Debug};
+use raw::RawNetlinkAttribute;
+use std::convert::TryFrom;
+use std::fmt::Debug;
+pub use unknown::UnknownAttribute;
 
 mod nested;
 mod raw;
@@ -9,8 +13,6 @@ mod unknown;
 
 pub use nested::Nested;
 pub use raw::ParseRawNetlinkAttributeError;
-use raw::RawNetlinkAttribute;
-pub use unknown::UnknownAttribute;
 
 pub trait NetlinkAttributeSerializable {
     fn get_type(&self) -> u16;

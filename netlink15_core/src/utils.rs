@@ -1,4 +1,5 @@
-use std::{mem::size_of, string::FromUtf8Error};
+use std::mem::size_of;
+use std::string::FromUtf8Error;
 
 #[derive(thiserror::Error, Clone, Debug, PartialEq)]
 pub enum ParseNlaIntError {

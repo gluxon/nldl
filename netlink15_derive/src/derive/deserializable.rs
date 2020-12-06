@@ -1,6 +1,7 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{Data, DeriveInput};
+use syn::Data;
+use syn::DeriveInput;
 
 use crate::parsing::crate_attr::DeriveOptions;
 use crate::parsing::nla_type::PartitionedAttributeKinds;

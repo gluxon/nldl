@@ -1,6 +1,7 @@
 use super::RawNetlinkMessageHeader;
 use arrayref::array_ref;
-use std::{convert::TryFrom, mem::size_of};
+use std::convert::TryFrom;
+use std::mem::size_of;
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) struct RawNetlinkMessage<'a> {

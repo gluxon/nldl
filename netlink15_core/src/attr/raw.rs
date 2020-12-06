@@ -1,6 +1,7 @@
 use crate::utils::nla_get_u16;
 use crate::utils::ParseNlaIntError;
-use std::{convert::TryFrom, mem::size_of};
+use std::convert::TryFrom;
+use std::mem::size_of;
 
 /// Assists parsing within this crate. Not meant to be used outside the
 /// netlink15_core. Instead implementations of
