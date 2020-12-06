@@ -30,9 +30,9 @@ pub enum ControllerAttribute {
     #[nla_type(CTRL_ATTR_MAXATTR)]
     MaxAttr(u32),
     #[nla_type(CTRL_ATTR_OPS)]
-    Operations(Nested<ControllerAttributeOperation>),
+    Operations(Vec<Nested<ControllerAttributeOperation>>),
     #[nla_type(CTRL_ATTR_MCAST_GROUPS)]
-    MulticastGroups(Nested<ControllerAttributeMulticastGroup>),
+    MulticastGroups(Vec<Nested<ControllerAttributeMulticastGroup>>),
     #[nla_type(_)]
     Unknown(UnknownAttribute),
 }

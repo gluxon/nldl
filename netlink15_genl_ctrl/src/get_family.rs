@@ -76,10 +76,10 @@ mod tests {
                 ControllerAttribute::Version(1),
                 ControllerAttribute::HeaderSize(0),
                 ControllerAttribute::MaxAttr(1),
-                ControllerAttribute::MulticastGroups(Nested(vec![
+                ControllerAttribute::MulticastGroups(vec![Nested(vec![
                     ControllerAttributeMulticastGroup::Id(3),
                     ControllerAttributeMulticastGroup::Name("acpi_mc_group".to_string()),
-                ])),
+                ])]),
             ],
         };
 
