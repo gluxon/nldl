@@ -23,7 +23,7 @@
                 "$rustc"
             ],
             "group": {
-                "kind": "build",
+                "kind": "test",
                 "isDefault": true
             }
         }
