@@ -85,6 +85,9 @@ pub struct NetlinkMessageResponse<T: NetlinkPayloadResponse> {
     pub payload: T,
 }
 
+pub type DeserializeNetlinkMessageResult<T> =
+    Result<NetlinkMessageResponse<T>, NetlinkMessageResponseDeserializeError<T>>;
+
 #[derive(thiserror::Error, Debug, PartialEq)]
 pub enum NetlinkMessageResponseDeserializeError<T: NetlinkPayloadResponse> {
     #[error(transparent)]
