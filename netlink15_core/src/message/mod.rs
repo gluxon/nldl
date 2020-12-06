@@ -99,6 +99,14 @@ pub enum NetlinkMessageResponseDeserializeError<T: NetlinkPayloadResponse> {
 impl<T: NetlinkPayloadResponse> NetlinkMessageResponse<T> {
     pub fn deserialize(buf: &[u8]) -> Result<Self, NetlinkMessageResponseDeserializeError<T>> {
         let raw = RawNetlinkMessage::try_from(buf)?;
+        raw.try_into()
+    }
+}
+
+impl<T: NetlinkPayloadResponse> TryFrom<RawNetlinkMessage<'_>> for NetlinkMessageResponse<T> {
+    type Error = NetlinkMessageResponseDeserializeError<T>;
+
+    fn try_from(raw: RawNetlinkMessage<'_>) -> Result<Self, Self::Error> {
         let header = raw.header.into();
         let payload = T::deserialize(&raw.payload)
             .map_err(NetlinkMessageResponseDeserializeError::PayloadDeserialize)?;
