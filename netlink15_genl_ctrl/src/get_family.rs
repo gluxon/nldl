@@ -1,9 +1,12 @@
 use super::attr::ControllerAttribute;
+use crate::err::GenlCtrlCommandError;
 use netlink15_genl::socket::GenlSocket;
 use netlink15_genl::GenericNetlinkHeader;
 use netlink15_genl::GenericNetlinkRequest;
 
-pub fn get_family(sock: &GenlSocket, family_name: String) -> nix::Result<Vec<ControllerAttribute>> {
+pub type GetFamilyResult = Result<Vec<ControllerAttribute>, GenlCtrlCommandError>;
+
+pub fn get_family(sock: &GenlSocket, family_name: String) -> GetFamilyResult {
     let genl_request = GenericNetlinkRequest {
         header: GenericNetlinkHeader {
             cmd: libc::CTRL_CMD_GETFAMILY as u8,
@@ -15,7 +18,7 @@ pub fn get_family(sock: &GenlSocket, family_name: String) -> nix::Result<Vec<Con
     sock.send(genl_request)?;
     let resp = sock.recv::<Vec<ControllerAttribute>>()?;
 
-    Ok(resp.payload.payload)
+    Ok(resp?.payload.payload)
 }
 
 #[cfg(test)]

@@ -1,5 +1,6 @@
 use super::GenericNetlinkRequest;
 use super::GenericNetlinkResponse;
+use netlink15_core::message::DeserializeNetlinkMessageResult;
 use netlink15_core::message::NetlinkMessageHeader;
 use netlink15_core::message::NetlinkMessageRequest;
 use netlink15_core::message::NetlinkMessageResponse;
@@ -60,15 +61,11 @@ impl GenlSocket {
 
     pub fn recv<T: NetlinkPayloadResponse>(
         &self,
-    ) -> nix::Result<NetlinkMessageResponse<GenericNetlinkResponse<T>>> {
+    ) -> nix::Result<DeserializeNetlinkMessageResult<GenericNetlinkResponse<T>>> {
         let mut resp_bytes = vec![0; 32768];
-        nix::sys::socket::recv(self.fd, &mut resp_bytes, MsgFlags::empty())?;
-
-        // TODO: Remove the expect.
-        let resp_message =
-            NetlinkMessageResponse::<GenericNetlinkResponse<T>>::deserialize(&resp_bytes)
-                .expect("Error deserializing");
-        Ok(resp_message)
+        let bytes_read = nix::sys::socket::recv(self.fd, &mut resp_bytes, MsgFlags::empty())?;
+        resp_bytes.truncate(bytes_read);
+        Ok(NetlinkMessageResponse::<GenericNetlinkResponse<T>>::deserialize(&resp_bytes))
     }
 }
 
