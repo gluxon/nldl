@@ -15,6 +15,7 @@ use std::fmt::Debug;
 use std::mem::size_of;
 
 mod raw;
+pub mod utils;
 
 /// Similar to [nlmsghdr][libc::nlmsghdr] and
 /// [RawNetlinkMessageHeader](RawNetlinkMessageHeader) but omits the `len` field.
