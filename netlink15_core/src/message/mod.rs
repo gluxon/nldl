@@ -148,6 +148,15 @@ impl NetlinkPayloadRequest for String {
     }
 }
 
+impl<T: NetlinkPayloadRequest> NetlinkPayloadRequest for Option<T> {
+    fn serialize(&self, buf: &mut Vec<u8>) {
+        match self {
+            Some(val) => val.serialize(buf),
+            None => {}
+        }
+    }
+}
+
 impl NetlinkPayloadResponse for u16 {
     type Error = ParseNlaIntError;
 

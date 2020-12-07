@@ -1,5 +1,6 @@
 use super::GenericNetlinkRequest;
 use super::GenericNetlinkResponse;
+use netlink15_core::message::utils::create_message_iterator;
 use netlink15_core::message::DeserializeNetlinkMessageResult;
 use netlink15_core::message::NetlinkMessageHeader;
 use netlink15_core::message::NetlinkMessageRequest;
@@ -67,6 +68,16 @@ impl GenlSocket {
         let bytes_read = nix::sys::socket::recv(self.fd, &mut resp_bytes, MsgFlags::empty())?;
         resp_bytes.truncate(bytes_read);
         Ok(NetlinkMessageResponse::<GenericNetlinkResponse<T>>::deserialize(&resp_bytes))
+    }
+
+    pub fn recv_multipart<T: NetlinkPayloadResponse>(
+        &self,
+    ) -> nix::Result<impl Iterator<Item = DeserializeNetlinkMessageResult<GenericNetlinkResponse<T>>>>
+    {
+        let mut resp_bytes = vec![0; 32768];
+        let bytes_read = nix::sys::socket::recv(self.fd, &mut resp_bytes, MsgFlags::empty())?;
+        resp_bytes.truncate(bytes_read);
+        Ok(create_message_iterator(resp_bytes))
     }
 }
 
