@@ -18,6 +18,7 @@ mod raw;
 
 /// Similar to [nlmsghdr][libc::nlmsghdr] and
 /// [RawNetlinkMessageHeader](RawNetlinkMessageHeader) but omits the `len` field.
+#[derive(Debug)]
 pub struct NetlinkMessageHeader {
     pub ty: u16,
     pub flags: u16,
@@ -80,6 +81,7 @@ impl<T: NetlinkPayloadRequest> NetlinkMessageRequest<T> {
     }
 }
 
+#[derive(Debug)]
 pub struct NetlinkMessageResponse<T: NetlinkPayloadResponse> {
     pub header: NetlinkMessageHeader,
     pub payload: T,
