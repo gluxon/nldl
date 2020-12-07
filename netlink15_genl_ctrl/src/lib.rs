@@ -4,6 +4,7 @@ use netlink15_genl::socket::GenlSocket;
 
 pub mod attr;
 pub mod err;
+pub mod family;
 mod get_family;
 mod list;
 
