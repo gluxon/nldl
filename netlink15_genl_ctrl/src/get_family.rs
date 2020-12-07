@@ -14,8 +14,9 @@ pub fn get_family(sock: &GenlSocket, family_name: String) -> GetFamilyResult {
         },
         payload: ControllerAttribute::FamilyName(family_name),
     };
+    let flags = (libc::NLM_F_REQUEST | libc::NLM_F_ACK) as u16;
 
-    sock.send(genl_request)?;
+    sock.send(genl_request, flags)?;
     let resp = sock.recv::<Vec<ControllerAttribute>>()?;
 
     Ok(resp?.payload.payload)

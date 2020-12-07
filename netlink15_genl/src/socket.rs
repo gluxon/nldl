@@ -42,11 +42,12 @@ impl GenlSocket {
     pub fn send<T: NetlinkPayloadRequest>(
         &self,
         genl_request: GenericNetlinkRequest<T>,
+        flags: u16,
     ) -> nix::Result<()> {
         let message = NetlinkMessageRequest {
             header: NetlinkMessageHeader {
                 ty: libc::GENL_ID_CTRL as u16,
-                flags: (libc::NLM_F_REQUEST | libc::NLM_F_ACK) as u16,
+                flags,
                 seq: 1,
                 pid: 0,
             },
