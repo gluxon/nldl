@@ -21,7 +21,7 @@ impl<'a> TryFrom<&'a [u8]> for RawNetlinkMessage<'a> {
     type Error = ReadRawNetlinkMessageError;
 
     fn try_from(buf: &'a [u8]) -> Result<Self, Self::Error> {
-        if buf.len() < size_of::<libc::nlattr>() {
+        if buf.len() < size_of::<libc::nlmsghdr>() {
             return Err(Self::Error::IncompleteHeader { len: buf.len() });
         }
 
