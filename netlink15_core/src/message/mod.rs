@@ -173,6 +173,14 @@ impl NetlinkPayloadResponse for u32 {
     }
 }
 
+impl NetlinkPayloadResponse for Vec<u8> {
+    type Error = std::convert::Infallible;
+
+    fn deserialize(buf: &[u8]) -> Result<Self, Self::Error> {
+        Ok(Self::from(buf))
+    }
+}
+
 impl NetlinkPayloadResponse for String {
     type Error = NlaGetStringError;
 
