@@ -4,7 +4,7 @@ use crate::attr::ControllerAttributeOperation;
 use std::convert::TryFrom;
 use std::convert::TryInto;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Family {
     pub family_id: u16,
     pub family_name: String,
@@ -15,13 +15,13 @@ pub struct Family {
     pub multicast_groups: Vec<FamilyMulticastGroup>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct FamilyOperation {
     pub id: u32,
     pub flags: u32,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct FamilyMulticastGroup {
     pub name: String,
     pub id: u32,
