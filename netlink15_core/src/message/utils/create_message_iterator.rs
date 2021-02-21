@@ -58,7 +58,7 @@ mod tests {
     use super::create_message_iterator;
 
     #[test]
-    fn stops_after_error() -> anyhow::Result<()> {
+    fn stops_after_error() {
         // Start with a valid nlctrl message.
         let mut buf = vec![
             0x88, 0x00, 0x00, 0x00, 0x10, 0x00, 0x02, 0x00, 0x01, 0x00, 0x00, 0x00, 0x3A, 0xC6,
@@ -81,7 +81,5 @@ mod tests {
         assert!(matches![messages.next(), Some(Ok(_))]);
         assert!(matches![messages.next(), Some(Err(_))]);
         assert!(matches![messages.next(), None]);
-
-        Ok(())
     }
 }
