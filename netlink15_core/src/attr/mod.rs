@@ -70,7 +70,7 @@ impl<T: NetlinkAttributeDeserializable> NetlinkPayloadResponse for Vec<T> {
 
     fn deserialize(buf: &[u8]) -> Result<Self, Self::Error> {
         let mut attrs = vec![];
-        let mut view = &buf[..];
+        let mut view = buf;
 
         while !view.is_empty() {
             let raw = RawNetlinkAttribute::try_from(view)?;
