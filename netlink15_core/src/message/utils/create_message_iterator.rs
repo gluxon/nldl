@@ -6,8 +6,14 @@ use crate::message::NetlinkMessageResponseDeserializeError;
 use crate::message::NetlinkPayloadResponse;
 use std::convert::TryFrom;
 
-/// This iterator intentionally does not free messages that have already been
-/// iterated over. Memory is not released until the entire iterator is dropped.
+/// Takes a byte buffer and returns an Iterator over deserialized Netlink messages. The iterator
+/// continues until there are no remaining bytes in the buffer.
+///
+/// This is similar to the process described in libnl here:
+/// https://www.infradead.org/~tgr/libnl/doc/core.html#_parsing_a_message
+///
+/// This iterator intentionally does not free messages that have already been iterated over to avoid
+/// re-malloc'ing remaining bytes. Memory is not released until the entire iterator is dropped.
 pub fn create_message_iterator<T>(
     buf: Vec<u8>,
 ) -> impl Iterator<Item = DeserializeNetlinkMessageResult<T>>
@@ -21,7 +27,6 @@ where
             return None;
         }
 
-        // TODO: Check for NLM_F_MULTI and NLMSG_DONE.
         let read_result = next(&buf[offset..]);
         match read_result {
             Ok(success) => {
