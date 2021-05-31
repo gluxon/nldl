@@ -57,6 +57,14 @@ pub struct RawNetlinkMessageHeader {
 }
 
 impl RawNetlinkMessageHeader {
+    fn serialize(&self, buf: &mut Vec<u8>) {
+        self.len.serialize(buf);
+        self.ty.serialize(buf);
+        self.flags.serialize(buf);
+        self.seq.serialize(buf);
+        self.pid.serialize(buf);
+    }
+
     fn deserialize(buf: &[u8; size_of::<libc::nlmsghdr>()]) -> Self {
         Self {
             len: u32::from_ne_bytes((&buf[0..4]).try_into().unwrap()),
