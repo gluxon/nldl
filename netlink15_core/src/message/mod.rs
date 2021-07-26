@@ -138,6 +138,10 @@ pub trait NetlinkPayloadResponse: Debug + PartialEq + Sized {
     fn deserialize(buf: &[u8]) -> Result<Self, Self::Error>;
 }
 
+impl NetlinkPayloadRequest for () {
+    fn serialize(&self, _buf: &mut Vec<u8>) {}
+}
+
 impl NetlinkPayloadRequest for u16 {
     fn serialize(&self, buf: &mut Vec<u8>) {
         nla_put_u16(buf, *self);
@@ -162,6 +166,14 @@ impl<T: NetlinkPayloadRequest> NetlinkPayloadRequest for Option<T> {
             Some(val) => val.serialize(buf),
             None => {}
         }
+    }
+}
+
+impl NetlinkPayloadResponse for () {
+    type Error = std::convert::Infallible;
+
+    fn deserialize(_buf: &[u8]) -> Result<Self, Self::Error> {
+        Ok(())
     }
 }
 
