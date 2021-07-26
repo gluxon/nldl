@@ -1,3 +1,13 @@
+mod netlink_message_error;
+mod netlink_message_type;
+mod raw;
+pub mod utils;
+
+pub use self::netlink_message_error::NetlinkErrorMessagePayload;
+pub use self::netlink_message_error::ReadNetlinkErrorMessageError;
+pub use self::netlink_message_type::NetlinkMessageType;
+pub use self::netlink_message_type::NetlinkMessageTypeDeserializeError;
+
 use self::raw::RawNetlinkMessage;
 use self::raw::ReadRawNetlinkMessageError;
 use super::utils::nla_get_string;
@@ -13,9 +23,6 @@ use std::convert::TryFrom;
 use std::convert::TryInto;
 use std::fmt::Debug;
 use std::mem::size_of;
-
-mod raw;
-pub mod utils;
 
 /// Similar to [nlmsghdr][libc::nlmsghdr] and
 /// [RawNetlinkMessageHeader](RawNetlinkMessageHeader) but omits the `len` field.
@@ -78,7 +85,7 @@ impl RawNetlinkMessageHeader {
 
 pub struct NetlinkMessageRequest<T: NetlinkPayloadRequest> {
     pub header: NetlinkMessageHeader,
-    pub payload: T,
+    pub payload: NetlinkMessageType<T>,
 }
 
 impl<T: NetlinkPayloadRequest> NetlinkMessageRequest<T> {
@@ -93,7 +100,7 @@ impl<T: NetlinkPayloadRequest> NetlinkMessageRequest<T> {
 #[derive(Debug)]
 pub struct NetlinkMessageResponse<T: NetlinkPayloadResponse> {
     pub header: NetlinkMessageHeader,
-    pub payload: T,
+    pub payload: NetlinkMessageType<T>,
 }
 
 pub type DeserializeNetlinkMessageResult<T> =
@@ -107,7 +114,7 @@ pub enum NetlinkMessageResponseDeserializeError<T: NetlinkPayloadResponse> {
     // There's a cryptic compiler error message when #[error(transparent)] is
     // set on the generic below.
     #[error("{0}")]
-    PayloadDeserialize(T::Error),
+    PayloadDeserialize(NetlinkMessageTypeDeserializeError<T>),
 }
 
 impl<T: NetlinkPayloadResponse> NetlinkMessageResponse<T> {
@@ -121,8 +128,8 @@ impl<T: NetlinkPayloadResponse> TryFrom<RawNetlinkMessage<'_>> for NetlinkMessag
     type Error = NetlinkMessageResponseDeserializeError<T>;
 
     fn try_from(raw: RawNetlinkMessage<'_>) -> Result<Self, Self::Error> {
-        let header = raw.header.into();
-        let payload = T::deserialize(&raw.payload)
+        let header: NetlinkMessageHeader = raw.header.into();
+        let payload = NetlinkMessageType::deserialize(header.ty, &raw.payload)
             .map_err(NetlinkMessageResponseDeserializeError::PayloadDeserialize)?;
 
         Ok(Self { header, payload })

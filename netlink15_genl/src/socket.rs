@@ -2,9 +2,12 @@ use super::GenericNetlinkRequest;
 use super::GenericNetlinkResponse;
 use netlink15_core::message::utils::create_message_iterator;
 use netlink15_core::message::DeserializeNetlinkMessageResult;
+use netlink15_core::message::NetlinkErrorMessagePayload;
 use netlink15_core::message::NetlinkMessageHeader;
 use netlink15_core::message::NetlinkMessageRequest;
 use netlink15_core::message::NetlinkMessageResponse;
+use netlink15_core::message::NetlinkMessageResponseDeserializeError;
+use netlink15_core::message::NetlinkMessageType;
 use netlink15_core::message::NetlinkPayloadRequest;
 use netlink15_core::message::NetlinkPayloadResponse;
 use nix::sys::socket::bind;
@@ -52,7 +55,7 @@ impl GenlSocket {
                 seq: 1,
                 pid: 0,
             },
-            payload: genl_request,
+            payload: NetlinkMessageType::ProtocolMessage(genl_request),
         };
 
         let message_bytes = netlink15_core::serialize(&message);
@@ -79,6 +82,45 @@ impl GenlSocket {
         resp_bytes.truncate(bytes_read);
         Ok(create_message_iterator(resp_bytes))
     }
+
+    /// Return all messages from a multipart response buffered into a Vec. Stops after encountering
+    /// Error, Done, or Overrun message types.
+    pub fn recv_until_done_buffered<T: NetlinkPayloadResponse>(
+        &self,
+    ) -> Result<Vec<GenericNetlinkResponse<T>>, RecvUntilDoneError<T>> {
+        let mut messages: Vec<GenericNetlinkResponse<T>> = vec![];
+
+        loop {
+            let batch = self.recv_multipart()?;
+            for deser_result in batch {
+                let next_message = deser_result.map_err(RecvUntilDoneError::DeserializeError)?;
+
+                match next_message.payload {
+                    NetlinkMessageType::Noop => (),
+                    NetlinkMessageType::Error(err) => {
+                        return Err(RecvUntilDoneError::NetlinkError(err))
+                    }
+                    NetlinkMessageType::Done => return Ok(messages),
+                    NetlinkMessageType::Overrun => {
+                        return Err(RecvUntilDoneError::UnexpectedOverrun)
+                    }
+                    NetlinkMessageType::ProtocolMessage(message) => messages.push(message),
+                };
+            }
+        }
+    }
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum RecvUntilDoneError<T: NetlinkPayloadResponse> {
+    #[error(transparent)]
+    NixError(#[from] nix::Error),
+    #[error("{0}")]
+    DeserializeError(NetlinkMessageResponseDeserializeError<GenericNetlinkResponse<T>>),
+    #[error("Received NLMSG_OVERRUN message instead of proper response.")]
+    UnexpectedOverrun,
+    #[error("Received NLMSG_ERROR message with code: {:?}", .0.error_code)]
+    NetlinkError(NetlinkErrorMessagePayload),
 }
 
 /// Some SockProtocol values aren't bound by nix yet.

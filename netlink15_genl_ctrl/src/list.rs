@@ -17,23 +17,29 @@ pub fn list(sock: &GenlSocket) -> ListResult {
     let flags = (libc::NLM_F_REQUEST | libc::NLM_F_DUMP) as u16;
 
     sock.send(genl_request, flags)?;
-    let resp = sock.recv_multipart::<Vec<ControllerAttribute>>()?;
+    let resp = sock.recv_until_done_buffered::<Vec<ControllerAttribute>>()?;
 
-    Ok(resp
-        .map(|read_message_result| read_message_result.map(|message| message.payload.payload))
-        .collect::<Result<_, _>>()?)
+    // TODO: There's a bit of unnecessary copying here.
+    Ok(resp.into_iter().map(|message| message.payload).collect())
 }
 
 #[cfg(test)]
 mod tests {
-    use std::convert::TryInto;
-
     use crate::attr::ControllerAttribute;
     use crate::family::Family;
     use crate::family::FamilyMulticastGroup;
     use crate::family::FamilyOperation;
     use netlink15_core::message::utils::create_message_iterator;
+    use netlink15_core::message::NetlinkMessageType;
     use netlink15_genl::GenericNetlinkResponse;
+    use std::convert::TryInto;
+
+    fn expect_protocol_message<T>(message_type: NetlinkMessageType<T>) -> T {
+        match message_type {
+            NetlinkMessageType::ProtocolMessage(protocol_message) => protocol_message,
+            _ => panic!("There should not be other message types in this test. Only valid Generic Netlink protocol messages were expected."),
+        }
+    }
 
     #[test]
     fn test_response_deserialization() -> anyhow::Result<()> {
@@ -576,7 +582,10 @@ mod tests {
         let actual =
             create_message_iterator::<GenericNetlinkResponse<Vec<ControllerAttribute>>>(recv_bytes)
                 .map(|read_message_result| {
-                    read_message_result.map(|message| message.payload.payload)
+                    read_message_result
+                        .map(|message| message.payload)
+                        .map(expect_protocol_message)
+                        .map(|genl_message| genl_message.payload)
                 })
                 .flat_map(|read_message_result| read_message_result.map(|attrs| attrs.try_into()))
                 .collect::<Result<Vec<Family>, _>>()?;
