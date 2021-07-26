@@ -99,7 +99,7 @@ pub struct NetlinkMessageResponse<T: NetlinkPayloadResponse> {
 pub type DeserializeNetlinkMessageResult<T> =
     Result<NetlinkMessageResponse<T>, NetlinkMessageResponseDeserializeError<T>>;
 
-#[derive(thiserror::Error, Debug, PartialEq)]
+#[derive(thiserror::Error, Debug)]
 pub enum NetlinkMessageResponseDeserializeError<T: NetlinkPayloadResponse> {
     #[error(transparent)]
     RawReadError(#[from] ReadRawNetlinkMessageError),
