@@ -26,7 +26,7 @@ impl<'a> TryFrom<&'a [u8]> for RawNetlinkMessage<'a> {
         }
 
         let header_bytes = array_ref![buf, 0, size_of::<libc::nlmsghdr>()];
-        let header = RawNetlinkMessageHeader::deserialize(&header_bytes);
+        let header = RawNetlinkMessageHeader::deserialize(header_bytes);
 
         let remaining = &buf[size_of::<libc::nlmsghdr>()..];
 

@@ -55,12 +55,12 @@ impl<T: NetlinkPayloadResponse> NetlinkPayloadResponse for GenericNetlinkRespons
 
         let header_bytes = {
             let mut arr = [0u8; size_of::<libc::genlmsghdr>()];
-            arr.clone_from_slice(&header_bytes);
+            arr.clone_from_slice(header_bytes);
             arr
         };
 
         let header = GenericNetlinkHeader::deserialize(header_bytes);
-        let payload = T::deserialize(&payload_bytes)?;
+        let payload = T::deserialize(payload_bytes)?;
 
         Ok(Self { header, payload })
     }

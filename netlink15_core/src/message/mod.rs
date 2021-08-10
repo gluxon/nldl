@@ -129,7 +129,7 @@ impl<T: NetlinkPayloadResponse> TryFrom<RawNetlinkMessage<'_>> for NetlinkMessag
 
     fn try_from(raw: RawNetlinkMessage<'_>) -> Result<Self, Self::Error> {
         let header: NetlinkMessageHeader = raw.header.into();
-        let payload = NetlinkMessageType::deserialize(header.ty, &raw.payload)
+        let payload = NetlinkMessageType::deserialize(header.ty, raw.payload)
             .map_err(NetlinkMessageResponseDeserializeError::PayloadDeserialize)?;
 
         Ok(Self { header, payload })
