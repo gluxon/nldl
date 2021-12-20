@@ -35,9 +35,9 @@ pub struct GenericNetlinkRequest<T: NetlinkPayloadRequest> {
 }
 
 impl<T: NetlinkPayloadRequest> NetlinkPayloadRequest for GenericNetlinkRequest<T> {
-    fn serialize(&self, mut buf: &mut Vec<u8>) {
-        self.header.serialize(&mut buf);
-        self.payload.serialize(&mut buf);
+    fn serialize(&self, buf: &mut Vec<u8>) {
+        self.header.serialize(buf);
+        self.payload.serialize(buf);
     }
 }
 
