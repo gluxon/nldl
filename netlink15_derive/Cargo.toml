@@ -12,3 +12,7 @@ syn = "1.0"
 proc-macro2 = "1.0.18"
 quote = "1.0"
 thiserror = "1.0"
+
+[dev-dependencies]
+netlink15_core = { path = "../netlink15_core" }
+trybuild = "1.0"

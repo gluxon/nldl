@@ -100,21 +100,4 @@ mod tests {
 
         impl_netlink_attribute_deserializable(&test_enum);
     }
-
-    #[test]
-    fn deriving_simple_enum_succeeds() {
-        let test_enum: DeriveInput = parse_quote! {
-            #[netlink15(deserialize(error = "ParseNlaIntError"))]
-            enum ControllerAttributeOperation {
-                #[nla_type(0)]
-                Unspec,
-                #[nla_type(1)]
-                Id(u32),
-                #[nla_type(2)]
-                Flags(u32),
-            }
-        };
-
-        impl_netlink_attribute_deserializable(&test_enum);
-    }
 }
