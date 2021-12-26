@@ -17,9 +17,12 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
         Err(msg) => panic!("{}", msg),
     };
 
-    let partitioned_variants = PartitionedAttributeKinds::from(data_enum)
-        .unwrap_or_else(|err|
-            panic!("Failed to parse enum variants in NetlinkAttributeSerializable derive: {}", err));
+    let partitioned_variants = PartitionedAttributeKinds::from(data_enum).unwrap_or_else(|err| {
+        panic!(
+            "Failed to parse enum variants in NetlinkAttributeSerializable derive: {}",
+            err
+        )
+    });
     if let Some(unmarked_variant) = partitioned_variants.unmarked.first() {
         panic!(
             "Please annotate all enum variants with #[nla_type(..)]. Saw \"{}\" unannotated.",
@@ -28,7 +31,9 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
     }
     let wildcard_ident = match &partitioned_variants.wildcard[..] {
         [variant] => variant.ident,
-        [] => panic!("One variant must be marked with #[nla_type(_)] for wildcard handling. None found."),
+        [] => panic!(
+            "One variant must be marked with #[nla_type(_)] for wildcard handling. None found."
+        ),
         [..] => panic!(
             "Only 1 variant may be marked with #[nla_type(_)]. Saw {}",
             partitioned_variants.wildcard.len()

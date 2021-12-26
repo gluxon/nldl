@@ -11,9 +11,12 @@ pub fn impl_netlink_attribute_serializable(ast: &DeriveInput) -> TokenStream {
         Data::Enum(data_enum) => data_enum,
         _ => panic!("NetlinkAttributeSerializable derive may only be used on enums."),
     };
-    let partitioned_variants = PartitionedAttributeKinds::from(data_enum)
-        .unwrap_or_else(|err|
-            panic!("Failed to parse enum variants in NetlinkAttributeSerializable derive: {}", err));
+    let partitioned_variants = PartitionedAttributeKinds::from(data_enum).unwrap_or_else(|err| {
+        panic!(
+            "Failed to parse enum variants in NetlinkAttributeSerializable derive: {}",
+            err
+        )
+    });
     if let Some(unmarked_variant) = partitioned_variants.unmarked.first() {
         panic!(
             "Please annotate all enum variants with #[nla_type(..)]. Saw \"{}\" unannotated.",
