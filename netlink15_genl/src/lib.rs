@@ -1,5 +1,5 @@
-use netlink15_core::message::NetlinkPayloadRequest;
-use netlink15_core::message::NetlinkPayloadResponse;
+use nldl::message::NetlinkPayloadRequest;
+use nldl::message::NetlinkPayloadResponse;
 use std::mem::size_of;
 
 pub mod socket;

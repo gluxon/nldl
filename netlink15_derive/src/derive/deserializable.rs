@@ -93,11 +93,11 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
     };
 
     quote! {
-        impl netlink15_core::attr::NetlinkAttributeDeserializable for #name {
+        impl nldl::attr::NetlinkAttributeDeserializable for #name {
             type Error = #deserialize_error_type;
 
             fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {
-                use netlink15_core::message::NetlinkPayloadResponse;
+                use nldl::message::NetlinkPayloadResponse;
 
                 #type_ids_enum_checker_quote
 

@@ -1,15 +1,5 @@
 use super::GenericNetlinkRequest;
 use super::GenericNetlinkResponse;
-use netlink15_core::message::utils::create_message_iterator;
-use netlink15_core::message::DeserializeNetlinkMessageResult;
-use netlink15_core::message::NetlinkErrorMessagePayload;
-use netlink15_core::message::NetlinkMessageHeader;
-use netlink15_core::message::NetlinkMessageRequest;
-use netlink15_core::message::NetlinkMessageResponse;
-use netlink15_core::message::NetlinkMessageResponseDeserializeError;
-use netlink15_core::message::NetlinkMessageType;
-use netlink15_core::message::NetlinkPayloadRequest;
-use netlink15_core::message::NetlinkPayloadResponse;
 use nix::sys::socket::bind;
 use nix::sys::socket::socket;
 use nix::sys::socket::AddressFamily;
@@ -19,6 +9,16 @@ use nix::sys::socket::SockAddr;
 use nix::sys::socket::SockFlag;
 use nix::sys::socket::SockProtocol;
 use nix::sys::socket::SockType;
+use nldl::message::utils::create_message_iterator;
+use nldl::message::DeserializeNetlinkMessageResult;
+use nldl::message::NetlinkErrorMessagePayload;
+use nldl::message::NetlinkMessageHeader;
+use nldl::message::NetlinkMessageRequest;
+use nldl::message::NetlinkMessageResponse;
+use nldl::message::NetlinkMessageResponseDeserializeError;
+use nldl::message::NetlinkMessageType;
+use nldl::message::NetlinkPayloadRequest;
+use nldl::message::NetlinkPayloadResponse;
 use std::os::unix::io::RawFd;
 
 pub struct GenlSocket {
@@ -58,7 +58,7 @@ impl GenlSocket {
             payload: NetlinkMessageType::ProtocolMessage(genl_request),
         };
 
-        let message_bytes = netlink15_core::serialize(&message);
+        let message_bytes = nldl::serialize(&message);
 
         nix::sys::socket::send(self.fd, &message_bytes, MsgFlags::empty())?;
         Ok(())

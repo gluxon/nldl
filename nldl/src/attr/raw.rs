@@ -3,7 +3,7 @@ use crate::utils::ParseNlaIntError;
 use std::mem::size_of;
 
 /// Assists parsing within this crate. Not meant to be used outside the
-/// netlink15_core. Instead implementations of
+/// nldl. Instead implementations of
 /// `NetlinkAttributeSerializable`/`NetlinkAttributeDeserializable` should be
 /// used.
 #[derive(Debug, PartialEq, Eq)]

@@ -1,7 +1,7 @@
 use netlink15_derive::NetlinkAttributeDeserializable;
 use netlink15_derive::NetlinkAttributeSerializable;
-use netlink15_core::attr::UnknownAttribute;
-use netlink15_core::utils::ParseNlaIntError;
+use nldl::attr::UnknownAttribute;
+use nldl::utils::ParseNlaIntError;
 
 #[derive(Debug, PartialEq, NetlinkAttributeSerializable, NetlinkAttributeDeserializable)]
 #[netlink15(deserialize(error = "ParseNlaIntError"))]

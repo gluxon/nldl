@@ -1,5 +1,5 @@
 use netlink15_derive::NetlinkAttributeDeserializable;
-use netlink15_core::attr::UnknownAttribute;
+use nldl::attr::UnknownAttribute;
 
 #[derive(Debug, PartialEq, NetlinkAttributeDeserializable)]
 enum ControllerAttributeOperation {

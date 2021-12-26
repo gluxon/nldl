@@ -29,9 +29,9 @@ mod tests {
     use crate::family::Family;
     use crate::family::FamilyMulticastGroup;
     use crate::family::FamilyOperation;
-    use netlink15_core::message::utils::create_message_iterator;
-    use netlink15_core::message::NetlinkMessageType;
     use netlink15_genl::GenericNetlinkResponse;
+    use nldl::message::utils::create_message_iterator;
+    use nldl::message::NetlinkMessageType;
 
     fn expect_protocol_message<T>(message_type: NetlinkMessageType<T>) -> T {
         match message_type {

@@ -1,9 +1,9 @@
 use super::attr::ControllerAttribute;
 use crate::err::GenlCtrlCommandError;
-use netlink15_core::message::NetlinkMessageType;
 use netlink15_genl::socket::GenlSocket;
 use netlink15_genl::GenericNetlinkHeader;
 use netlink15_genl::GenericNetlinkRequest;
+use nldl::message::NetlinkMessageType;
 
 pub type GetFamilyResult = Result<Vec<ControllerAttribute>, GenlCtrlCommandError>;
 
@@ -30,12 +30,12 @@ pub fn get_family(sock: &GenlSocket, family_name: String) -> GetFamilyResult {
 mod tests {
     use crate::attr::ControllerAttribute;
     use crate::attr::ControllerAttributeMulticastGroup;
-    use netlink15_core::attr::Nested;
-    use netlink15_core::message::NetlinkPayloadRequest;
-    use netlink15_core::message::NetlinkPayloadResponse;
     use netlink15_genl::GenericNetlinkHeader;
     use netlink15_genl::GenericNetlinkRequest;
     use netlink15_genl::GenericNetlinkResponse;
+    use nldl::attr::Nested;
+    use nldl::message::NetlinkPayloadRequest;
+    use nldl::message::NetlinkPayloadResponse;
 
     /// genl ctrl get name acpi_event
     #[test]

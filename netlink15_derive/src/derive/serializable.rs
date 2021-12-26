@@ -52,10 +52,10 @@ pub fn impl_netlink_attribute_serializable(ast: &DeriveInput) -> TokenStream {
             });
 
     quote! {
-        impl netlink15_core::attr::NetlinkAttributeSerializable for #name {
+        impl nldl::attr::NetlinkAttributeSerializable for #name {
 
             fn get_type(&self) -> u16 {
-                use netlink15_core::attr::NetlinkAttributeSerializable;
+                use nldl::attr::NetlinkAttributeSerializable;
 
                 match self {
                     #( Self::#no_payload_idents => #no_payload_nla_types, )*
@@ -65,8 +65,8 @@ pub fn impl_netlink_attribute_serializable(ast: &DeriveInput) -> TokenStream {
             }
 
             fn serialize_payload(&self, buf: &mut Vec<u8>) {
-                use netlink15_core::message::NetlinkPayloadRequest;
-                use netlink15_core::attr::NetlinkAttributeSerializable;
+                use nldl::message::NetlinkPayloadRequest;
+                use nldl::attr::NetlinkAttributeSerializable;
 
                 match self {
                     #( Self::#no_payload_idents => {}, )*

@@ -1,7 +1,7 @@
 use crate::attr::ControllerAttribute;
-use netlink15_core::message::NetlinkMessageResponseDeserializeError;
 use netlink15_genl::socket::RecvUntilDoneError;
 use netlink15_genl::GenericNetlinkResponse;
+use nldl::message::NetlinkMessageResponseDeserializeError;
 
 #[derive(thiserror::Error, Debug)]
 pub enum GenlCtrlCommandError {
