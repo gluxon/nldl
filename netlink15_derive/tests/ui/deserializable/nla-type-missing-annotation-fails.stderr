@@ -1,0 +1,7 @@
+error: proc-macro derive panicked
+ --> tests/ui/deserializable/nla-type-missing-annotation-fails.rs:4:28
+  |
+4 | #[derive(Debug, PartialEq, NetlinkAttributeDeserializable)]
+  |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: message: Please annotate all enum variants with #[nla_type(..)]. Saw "Unknown" unannotated.
