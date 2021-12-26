@@ -26,8 +26,8 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
         );
     }
     let wildcard_ident = match &partitioned_variants.wildcard[..] {
-        [variant] => vec![variant.ident],
-        [] => vec![],
+        [variant] => variant.ident,
+        [] => panic!("One variant must be marked with #[nla_type(_)] for wildcard handling. None found."),
         [..] => panic!(
             "Only 1 variant may be marked with #[nla_type(_)]. Saw {}",
             partitioned_variants.wildcard.len()
@@ -100,7 +100,7 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
                 Ok(match ty {
                     #( #type_ids_mod_name::#no_payload_idents => Self::#no_payload_idents, )*
                     #( #type_ids_mod_name::#simple_idents => Self::#simple_idents(NetlinkPayloadResponse::deserialize(payload)?), )*
-                    #( _ => Self::#wildcard_ident(UnknownAttribute { ty, payload: Vec::from(payload) }), )*
+                    _ => Self::#wildcard_ident(UnknownAttribute { ty, payload: Vec::from(payload) }),
                 })
             }
         }
