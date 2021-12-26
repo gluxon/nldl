@@ -1,4 +1,5 @@
 [package]
+publish = false
 name = "netlink15_genl"
 version = "0.1.0"
 authors = ["Brandon Cheng <brandon.cheng@protonmail.com>"]
