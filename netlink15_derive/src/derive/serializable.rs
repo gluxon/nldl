@@ -73,28 +73,3 @@ pub fn impl_netlink_attribute_serializable(ast: &DeriveInput) -> TokenStream {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::impl_netlink_attribute_serializable;
-    use syn::parse_quote;
-    use syn::DeriveInput;
-
-    #[test]
-    fn deriving_simple_enum_does_not_panic() {
-        let test_enum: DeriveInput = parse_quote! {
-            enum ControllerAttributeOperation {
-                #[nla_type(0)]
-                Unspec,
-                #[nla_type(1)]
-                Id(u32),
-                #[nla_type(2)]
-                Flags(u32),
-                #[nla_type(_)]
-                Unknown(UnknownPayload)
-            }
-        };
-
-        impl_netlink_attribute_serializable(&test_enum);
-    }
-}
