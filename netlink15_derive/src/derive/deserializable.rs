@@ -106,35 +106,3 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::impl_netlink_attribute_deserializable;
-    use syn::parse_quote;
-    use syn::DeriveInput;
-
-    #[test]
-    #[should_panic(
-        expected = "Failed to find NetlinkAttributeDeserializable error type. Please annotate this enum. Ex: #[netlink15(deserialize(error = \"ParseNlaIntError\"))]"
-    )]
-    fn unannotated_crate_attr_panics() {
-        let test_enum: DeriveInput = parse_quote! {
-            enum ControllerAttributeOperation {}
-        };
-
-        impl_netlink_attribute_deserializable(&test_enum);
-    }
-
-    #[test]
-    #[should_panic(
-        expected = "Failed to find NetlinkAttributeDeserializable error type. Please annotate this enum. Ex: #[netlink15(deserialize(error = \"ParseNlaIntError\"))]"
-    )]
-    fn missing_deserialize_options_panics() {
-        let test_enum: DeriveInput = parse_quote! {
-            #[netlink15]
-            enum ControllerAttributeOperation {}
-        };
-
-        impl_netlink_attribute_deserializable(&test_enum);
-    }
-}

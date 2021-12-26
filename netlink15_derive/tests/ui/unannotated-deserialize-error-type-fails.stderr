@@ -1,0 +1,7 @@
+error: proc-macro derive panicked
+ --> tests/ui/unannotated-deserialize-error-type-fails.rs:4:28
+  |
+4 | #[derive(Debug, PartialEq, NetlinkAttributeDeserializable)]
+  |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: message: Failed to find NetlinkAttributeDeserializable error type. Please annotate this enum. Ex: #[netlink15(deserialize(error = "ParseNlaIntError"))]
