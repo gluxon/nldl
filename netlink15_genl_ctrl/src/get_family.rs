@@ -30,10 +30,9 @@ pub fn get_family(sock: &GenlSocket, family_name: String) -> GetFamilyResult {
 mod tests {
     use crate::attr::ControllerAttribute;
     use crate::attr::ControllerAttributeMulticastGroup;
-    use netlink15_core::{
-        attr::Nested,
-        message::{NetlinkPayloadRequest, NetlinkPayloadResponse},
-    };
+    use netlink15_core::attr::Nested;
+    use netlink15_core::message::NetlinkPayloadRequest;
+    use netlink15_core::message::NetlinkPayloadResponse;
     use netlink15_genl::GenericNetlinkHeader;
     use netlink15_genl::GenericNetlinkRequest;
     use netlink15_genl::GenericNetlinkResponse;

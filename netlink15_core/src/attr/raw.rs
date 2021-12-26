@@ -60,8 +60,10 @@ impl<'a> TryFrom<&'a [u8]> for RawNetlinkAttribute<'a> {
 
 #[cfg(test)]
 mod tests {
-    use super::{ParseRawNetlinkAttributeError, RawNetlinkAttribute};
-    use std::{convert::TryFrom, mem::size_of};
+    use super::ParseRawNetlinkAttributeError;
+    use super::RawNetlinkAttribute;
+    use std::convert::TryFrom;
+    use std::mem::size_of;
 
     #[test]
     fn padded_buffer() {

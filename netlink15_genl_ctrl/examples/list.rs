@@ -1,6 +1,7 @@
 use netlink15_genl::socket::GenlSocket;
+use netlink15_genl_ctrl::attr::ControllerAttribute;
 use netlink15_genl_ctrl::family::Family;
-use netlink15_genl_ctrl::{attr::ControllerAttribute, NetlinkGenericController};
+use netlink15_genl_ctrl::NetlinkGenericController;
 use std::convert::TryInto;
 
 fn main() -> anyhow::Result<()> {
