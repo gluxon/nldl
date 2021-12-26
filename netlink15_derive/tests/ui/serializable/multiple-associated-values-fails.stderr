@@ -1,7 +1,7 @@
 error: proc-macro derive panicked
- --> tests/ui/serializable/multiple-associated-values-fails.rs:6:10
+ --> tests/ui/serializable/multiple-associated-values-fails.rs:3:10
   |
-6 | #[derive(NetlinkAttributeSerializable)]
+3 | #[derive(NetlinkAttributeSerializable)]
   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   |
-  = help: message: Failed to parse enum variants in NetlinkAttributeSerializable derive.: MultipleAssociatedValues { ident: Ident { ident: "Flags", span: #0 bytes(265..270) } }
+  = help: message: Failed to parse enum variants in NetlinkAttributeSerializable derive: Variant "Flags" contains more than one associated value.

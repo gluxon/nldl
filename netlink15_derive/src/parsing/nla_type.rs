@@ -29,7 +29,7 @@ enum NetlinkAttributeKind<'a> {
 pub enum NetlinkAttributeKindFromVariantError {
     #[error(transparent)]
     SynError(#[from] syn::Error),
-    #[error("Variant \"{ident:?}\" contains more than one associated value.")]
+    #[error("Variant \"{ident}\" contains more than one associated value.")]
     MultipleAssociatedValues { ident: syn::Ident },
 }
 

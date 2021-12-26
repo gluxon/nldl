@@ -18,7 +18,8 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
     };
 
     let partitioned_variants = PartitionedAttributeKinds::from(data_enum)
-        .expect("Failed to parse enum variants in NetlinkAttributeDeserializable derive.");
+        .unwrap_or_else(|err|
+            panic!("Failed to parse enum variants in NetlinkAttributeSerializable derive: {}", err));
     if let Some(unmarked_variant) = partitioned_variants.unmarked.first() {
         panic!(
             "Please annotate all enum variants with #[nla_type(..)]. Saw \"{}\" unannotated.",
