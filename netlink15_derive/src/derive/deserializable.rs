@@ -53,6 +53,29 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
                 acc
             });
 
+    // Expressions can't be inlined on the left side of a match arm, so we'll assign them to a
+    // namespaced constant first.
+    //
+    // Example:
+    //
+    //     mod InternalTypeIdsNamespace {
+    //         pub const Unspec = EXAMPLE_ZERO_CONST as u16
+    //     }
+    //
+    //     // ...
+    //
+    //     Ok(match ty {
+    //         InternalTypeIdsNamespace::Unspec => ...
+    //     })
+    let type_ids_mod_name = quote! { InternalTypeIdsNamespace };
+    let type_id_consts_quote = quote! {
+        #[allow(non_upper_case_globals)]
+        mod #type_ids_mod_name {
+            #( pub const #no_payload_idents: u16 = #no_payload_nla_types; )*
+            #( pub const #simple_idents: u16 = #simple_nla_types; )*
+        }
+    };
+
     quote! {
         impl netlink15_core::attr::NetlinkAttributeDeserializable for #name {
             type Error = #deserialize_error_type;
@@ -60,9 +83,11 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
             fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {
                 use netlink15_core::message::NetlinkPayloadResponse;
 
+                #type_id_consts_quote
+
                 Ok(match ty {
-                    #( #no_payload_nla_types => Self::#no_payload_idents, )*
-                    #( #simple_nla_types => Self::#simple_idents(NetlinkPayloadResponse::deserialize(payload)?), )*
+                    #( #type_ids_mod_name::#no_payload_idents => Self::#no_payload_idents, )*
+                    #( #type_ids_mod_name::#simple_idents => Self::#simple_idents(NetlinkPayloadResponse::deserialize(payload)?), )*
                     #( _ => Self::#wildcard_ident(UnknownAttribute { ty, payload: Vec::from(payload) }), )*
                 })
             }
