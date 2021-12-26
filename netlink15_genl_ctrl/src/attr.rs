@@ -1,10 +1,10 @@
-use netlink15_derive::NetlinkAttributeDeserializable;
-use netlink15_derive::NetlinkAttributeSerializable;
 use nldl::attr::Nested;
 use nldl::attr::ParseNetlinkAttributeFromBufferError;
 use nldl::attr::UnknownAttribute;
 use nldl::utils::NlaGetStringError;
 use nldl::utils::ParseNlaIntError;
+use nldl_derive::NetlinkAttributeDeserializable;
+use nldl_derive::NetlinkAttributeSerializable;
 
 // https://www.infradead.org/~tgr/libnl/doc/api/ctrl_8c_source.html#l00043
 #[derive(Debug, PartialEq, NetlinkAttributeSerializable, NetlinkAttributeDeserializable)]

@@ -1,5 +1,5 @@
 [package]
-name = "netlink15_derive"
+name = "nldl_derive"
 version = "0.1.0"
 authors = ["Brandon Cheng <brandon.cheng@protonmail.com>"]
 edition = "2021"

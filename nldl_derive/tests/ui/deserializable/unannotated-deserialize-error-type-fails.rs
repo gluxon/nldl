@@ -1,4 +1,4 @@
-use netlink15_derive::NetlinkAttributeDeserializable;
+use nldl_derive::NetlinkAttributeDeserializable;
 use nldl::attr::UnknownAttribute;
 
 #[derive(Debug, PartialEq, NetlinkAttributeDeserializable)]

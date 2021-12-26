@@ -1,4 +1,4 @@
-use netlink15_derive::NetlinkAttributeDeserializable;
+use nldl_derive::NetlinkAttributeDeserializable;
 
 #[derive(Debug, PartialEq, NetlinkAttributeDeserializable)]
 struct TestStruct {}

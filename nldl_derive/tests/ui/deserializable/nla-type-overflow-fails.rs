@@ -1,5 +1,5 @@
-use netlink15_derive::NetlinkAttributeDeserializable;
-use netlink15_derive::NetlinkAttributeSerializable;
+use nldl_derive::NetlinkAttributeDeserializable;
+use nldl_derive::NetlinkAttributeSerializable;
 use nldl::utils::ParseNlaIntError;
 use nldl::attr::UnknownAttribute;
 

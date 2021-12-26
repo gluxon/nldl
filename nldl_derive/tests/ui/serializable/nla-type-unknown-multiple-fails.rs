@@ -1,5 +1,5 @@
 use nldl::attr::UnknownAttribute;
-use netlink15_derive::NetlinkAttributeSerializable;
+use nldl_derive::NetlinkAttributeSerializable;
 
 #[derive(Debug, PartialEq, NetlinkAttributeSerializable)]
 enum TestEnum {
