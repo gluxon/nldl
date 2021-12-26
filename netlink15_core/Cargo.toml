@@ -2,7 +2,7 @@
 name = "netlink15_core"
 version = "0.1.0"
 authors = ["Brandon Cheng <brandon.cheng@protonmail.com>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 arrayref = "0.3.6"
