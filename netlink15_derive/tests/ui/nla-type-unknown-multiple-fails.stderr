@@ -1,7 +1,0 @@
-error: proc-macro derive panicked
- --> tests/ui/nla-type-unknown-multiple-fails.rs:4:28
-  |
-4 | #[derive(Debug, PartialEq, NetlinkAttributeSerializable)]
-  |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  |
-  = help: message: Only 1 variant may be marked with #[nla_type(_)]. Saw 2

@@ -1,5 +1,5 @@
 error: proc-macro derive panicked
- --> tests/ui/derive-on-struct-fails.rs:3:28
+ --> tests/ui/serializable/derive-on-struct-fails.rs:3:28
   |
 3 | #[derive(Debug, PartialEq, NetlinkAttributeSerializable)]
   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

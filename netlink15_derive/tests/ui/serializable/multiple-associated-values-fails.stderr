@@ -1,5 +1,5 @@
 error: proc-macro derive panicked
- --> tests/ui/multiple-associated-values-fails.rs:6:10
+ --> tests/ui/serializable/multiple-associated-values-fails.rs:6:10
   |
 6 | #[derive(NetlinkAttributeSerializable)]
   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
