@@ -3,7 +3,6 @@ use super::message::NetlinkPayloadRequest;
 use super::message::NetlinkPayloadResponse;
 use super::write_to_buf_with_prefixed_u16_len;
 use raw::RawNetlinkAttribute;
-use std::convert::TryFrom;
 use std::fmt::Debug;
 pub use unknown::UnknownAttribute;
 

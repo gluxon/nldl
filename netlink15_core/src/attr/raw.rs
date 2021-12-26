@@ -1,6 +1,5 @@
 use crate::utils::nla_get_u16;
 use crate::utils::ParseNlaIntError;
-use std::convert::TryFrom;
 use std::mem::size_of;
 
 /// Assists parsing within this crate. Not meant to be used outside the
@@ -62,7 +61,6 @@ impl<'a> TryFrom<&'a [u8]> for RawNetlinkAttribute<'a> {
 mod tests {
     use super::ParseRawNetlinkAttributeError;
     use super::RawNetlinkAttribute;
-    use std::convert::TryFrom;
     use std::mem::size_of;
 
     #[test]

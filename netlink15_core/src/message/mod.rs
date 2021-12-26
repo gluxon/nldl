@@ -19,8 +19,6 @@ use super::utils::nla_put_u32;
 use super::utils::NlaGetStringError;
 use super::utils::ParseNlaIntError;
 use super::write_to_buf_with_prefixed_u32_len;
-use std::convert::TryFrom;
-use std::convert::TryInto;
 use std::fmt::Debug;
 use std::mem::size_of;
 

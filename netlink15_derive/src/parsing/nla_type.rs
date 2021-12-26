@@ -1,6 +1,4 @@
 use proc_macro2::TokenStream;
-use std::convert::TryFrom;
-use std::convert::TryInto;
 use syn::Attribute;
 use syn::DataEnum;
 use syn::Variant;

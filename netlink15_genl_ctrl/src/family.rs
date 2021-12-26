@@ -1,8 +1,6 @@
 use crate::attr::ControllerAttribute;
 use crate::attr::ControllerAttributeMulticastGroup;
 use crate::attr::ControllerAttributeOperation;
-use std::convert::TryFrom;
-use std::convert::TryInto;
 
 #[derive(Debug, PartialEq)]
 pub struct Family {

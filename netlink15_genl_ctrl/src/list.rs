@@ -32,7 +32,6 @@ mod tests {
     use netlink15_core::message::utils::create_message_iterator;
     use netlink15_core::message::NetlinkMessageType;
     use netlink15_genl::GenericNetlinkResponse;
-    use std::convert::TryInto;
 
     fn expect_protocol_message<T>(message_type: NetlinkMessageType<T>) -> T {
         match message_type {

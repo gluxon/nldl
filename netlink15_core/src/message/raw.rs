@@ -1,6 +1,5 @@
 use super::RawNetlinkMessageHeader;
 use arrayref::array_ref;
-use std::convert::TryFrom;
 use std::mem::size_of;
 
 #[derive(Debug, PartialEq, Eq)]

@@ -4,7 +4,6 @@ use crate::message::DeserializeNetlinkMessageResult;
 use crate::message::NetlinkMessageResponse;
 use crate::message::NetlinkMessageResponseDeserializeError;
 use crate::message::NetlinkPayloadResponse;
-use std::convert::TryFrom;
 
 /// Takes a byte buffer and returns an Iterator over deserialized Netlink messages. The iterator
 /// continues until there are no remaining bytes in the buffer.

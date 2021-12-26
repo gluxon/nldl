@@ -1,4 +1,3 @@
-use std::convert::TryFrom;
 use std::mem::size_of;
 
 pub mod attr;
