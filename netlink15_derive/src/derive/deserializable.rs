@@ -76,12 +76,24 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
         }
     };
 
+    // Generate an unused enum to check that the same u16 type id value doesn't appear more than
+    // once. The compiler errors are relatively appropriate.
+    let type_ids_enum_checker_quote = quote! {
+        #[repr(u16)]
+        enum InternalTypeIdsEnum {
+            #( #no_payload_idents = #no_payload_nla_types, )*
+            #( #simple_idents = #simple_nla_types, )*
+        }
+    };
+
     quote! {
         impl netlink15_core::attr::NetlinkAttributeDeserializable for #name {
             type Error = #deserialize_error_type;
 
             fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {
                 use netlink15_core::message::NetlinkPayloadResponse;
+
+                #type_ids_enum_checker_quote
 
                 #type_id_consts_quote
 

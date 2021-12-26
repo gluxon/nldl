@@ -1,0 +1,8 @@
+error[E0081]: discriminant value `0` already exists
+  --> tests/ui/nla-type-duplicate-fails.rs:12:16
+   |
+10 |     #[nla_type(0)]
+   |                - first use of `0`
+11 |     Unspec,
+12 |     #[nla_type(crate::ZERO)]
+   |                ^^^^^^^^^^^ enum already has `0`
