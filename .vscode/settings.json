@@ -1,0 +1,9 @@
+{
+  "rust-analyzer.assist.allowMergingIntoGlobImports": false,
+  "rust-analyzer.assist.importEnforceGranularity": true,
+  "rust-analyzer.assist.importGranularity": "item",
+  "vim.textwidth": 100,
+  "[rust]": {
+    "editor.formatOnSave": true
+  }
+}
