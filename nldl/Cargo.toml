@@ -11,3 +11,4 @@ thiserror = "1.0"
 
 [dev-dependencies]
 anyhow = "1.0"
+nldl_derive = { path = "../nldl_derive" }

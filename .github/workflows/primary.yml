@@ -46,3 +46,15 @@ jobs:
         run: cargo build --tests --verbose
       - name: Run tests
         run: cargo test --verbose
+
+  check-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: Swatinem/rust-cache@v1
+      - name: Install cargo-readme
+        run: cargo install cargo-readme
+      - name: Check README.md is up to date
+        run: |
+          (cd nldl && cargo readme > ../README.md)
+          git diff --exit-code README.md

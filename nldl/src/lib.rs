@@ -1,3 +1,40 @@
+//! [![Build Status](https://github.com/gluxon/nldl/workflows/Rust/badge.svg?branch=main)](https://github.com/gluxon/nldl/actions?query=workflow%3ARust)
+//!
+//! nldl is a library for declaratively defining serializable/deserializable [Netlink](https://en.wikipedia.org/wiki/Netlink) data structures in Rust.
+//!
+//! **This library is in active development and does not yet follow semantic versioning.** API changes will be actively made until a 1.0 release.
+//!
+//! # Example
+//!
+//! Here's how the [`family_op_policy` struct from libnl](https://www.infradead.org/~tgr/libnl/doc/api/ctrl_8c_source.html#l00054) might be defined with nldl.
+//!
+//! ```c
+//! static struct nla_policy family_op_policy[CTRL_ATTR_OP_MAX+1] = {
+//!         [CTRL_ATTR_OP_ID]       = { .type = NLA_U32 },
+//!         [CTRL_ATTR_OP_FLAGS]    = { .type = NLA_U32 },
+//! };
+//! ```
+//!
+//! ```
+//! use nldl_derive::NetlinkAttributeDeserializable;
+//! use nldl_derive::NetlinkAttributeSerializable;
+//! use nldl::attr::UnknownAttribute;
+//! use nldl::utils::ParseNlaIntError;
+//!
+//! #[derive(Debug, PartialEq, NetlinkAttributeSerializable, NetlinkAttributeDeserializable)]
+//! #[netlink15(deserialize(error = "ParseNlaIntError"))]
+//! pub enum ControllerAttributeOperation {
+//!     #[nla_type(libc::CTRL_ATTR_OP_UNSPEC as u16)]
+//!     Unspec,
+//!     #[nla_type(libc::CTRL_ATTR_OP_ID as u16)]
+//!     Id(u32),
+//!     #[nla_type(libc::CTRL_ATTR_OP_FLAGS as u16)]
+//!     Flags(u32),
+//!     #[nla_type(_)]
+//!     Unknown(UnknownAttribute),
+//! }
+//! ```
+
 use std::mem::size_of;
 
 pub mod attr;
