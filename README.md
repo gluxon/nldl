@@ -1,6 +1,6 @@
 # nldl
 
-[![Build Status](https://github.com/gluxon/nldl/workflows/Rust/badge.svg?branch=main)](https://github.com/gluxon/nldl/actions?query=workflow%3ARust)
+[![Build Status](https://github.com/gluxon/nldl/workflows/primary/badge.svg?branch=main)](https://github.com/gluxon/nldl/actions?query=workflow%3Aprimary)
 
 nldl is a library for declaratively defining serializable/deserializable [Netlink](https://en.wikipedia.org/wiki/Netlink) data structures in Rust.
 
