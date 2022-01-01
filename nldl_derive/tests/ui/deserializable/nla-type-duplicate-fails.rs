@@ -4,7 +4,7 @@ use nldl::utils::ParseNlaIntError;
 const ZERO: u16 = 0;
 
 #[derive(Debug, PartialEq, nldl::attr::Serialize, nldl::attr::Deserialize)]
-#[netlink15(deserialize(error = "ParseNlaIntError"))]
+#[nldl(deserialize(error = "ParseNlaIntError"))]
 enum ControllerAttributeOperation {
     #[nla_type(0)]
     Unspec,

@@ -6,7 +6,7 @@ use nldl::utils::ParseNlaIntError;
 
 // https://www.infradead.org/~tgr/libnl/doc/api/ctrl_8c_source.html#l00043
 #[derive(Debug, PartialEq, nldl::attr::Serialize, nldl::attr::Deserialize)]
-#[netlink15(deserialize(error = "ControllerAttributeDeserializeError"))]
+#[nldl(deserialize(error = "ControllerAttributeDeserializeError"))]
 pub enum ControllerAttribute {
     #[nla_type(libc::CTRL_ATTR_UNSPEC as u16)]
     Unspec,
@@ -29,7 +29,7 @@ pub enum ControllerAttribute {
 }
 
 #[derive(Debug, PartialEq, nldl::attr::Serialize, nldl::attr::Deserialize)]
-#[netlink15(deserialize(error = "ParseNlaIntError"))]
+#[nldl(deserialize(error = "ParseNlaIntError"))]
 pub enum ControllerAttributeOperation {
     #[nla_type(libc::CTRL_ATTR_OP_UNSPEC as u16)]
     Unspec,
@@ -42,7 +42,7 @@ pub enum ControllerAttributeOperation {
 }
 
 #[derive(Debug, PartialEq, nldl::attr::Serialize, nldl::attr::Deserialize)]
-#[netlink15(deserialize(error = "ControllerAttributeMulticastGroupDeserializeError"))]
+#[nldl(deserialize(error = "ControllerAttributeMulticastGroupDeserializeError"))]
 pub enum ControllerAttributeMulticastGroup {
     #[nla_type(libc::CTRL_ATTR_MCAST_GRP_UNSPEC as u16)]
     Unspec,

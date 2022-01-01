@@ -13,7 +13,7 @@ pub fn netlink_attribute_serializable_derive(input: TokenStream) -> TokenStream 
     impl_netlink_attribute_serializable(&ast).into()
 }
 
-#[proc_macro_derive(NetlinkAttributeDeserializable, attributes(netlink15, nla_type))]
+#[proc_macro_derive(NetlinkAttributeDeserializable, attributes(nldl, nla_type))]
 pub fn netlink_attribute_deserializable_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).expect("Unable to parse DeriveInput from TokenStream");
     impl_netlink_attribute_deserializable(&ast).into()

@@ -4,4 +4,4 @@ error: proc-macro derive panicked
 3 | #[derive(Debug, PartialEq, nldl::attr::Deserialize)]
   |                            ^^^^^^^^^^^^^^^^^^^^^^^
   |
-  = help: message: Failed to find NetlinkAttributeDeserializable error type. Please annotate this enum. Ex: #[netlink15(deserialize(error = "ParseNlaIntError"))]
+  = help: message: Failed to find NetlinkAttributeDeserializable error type. Please annotate this enum. Ex: #[nldl(deserialize(error = "ParseNlaIntError"))]

@@ -7,7 +7,7 @@ use syn::MetaList;
 use syn::MetaNameValue;
 use syn::NestedMeta;
 
-pub const CRATE_ATTR: &str = "netlink15";
+pub const CRATE_ATTR: &str = "nldl";
 
 pub struct DeriveOptions {
     pub deserialize: DeriveDeserializeOptions,
@@ -21,7 +21,7 @@ pub struct DeriveDeserializeOptions {
 pub enum DeriveOptionsTryFromError {
     #[error(transparent)]
     SynError(#[from] syn::Error),
-    #[error("Failed to find NetlinkAttributeDeserializable error type. Please annotate this enum. Ex: #[netlink15(deserialize(error = \"ParseNlaIntError\"))]")]
+    #[error("Failed to find NetlinkAttributeDeserializable error type. Please annotate this enum. Ex: #[nldl(deserialize(error = \"ParseNlaIntError\"))]")]
     DeserializeErrorNotFound,
 }
 

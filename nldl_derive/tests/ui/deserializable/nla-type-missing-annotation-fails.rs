@@ -1,7 +1,7 @@
 use nldl::attr::UnknownAttribute;
 
 #[derive(Debug, PartialEq, nldl::attr::Deserialize)]
-#[netlink15(deserialize(error = "ParseNlaIntError"))]
+#[nldl(deserialize(error = "ParseNlaIntError"))]
 enum ControllerAttributeOperation {
     #[nla_type(0)]
     Unspec,
@@ -9,7 +9,7 @@ enum ControllerAttributeOperation {
     Id(u32),
     #[nla_type(2)]
     Flags(u32),
-    Unknown(UnknownAttribute)
+    Unknown(UnknownAttribute),
 }
 
 fn main() {}
