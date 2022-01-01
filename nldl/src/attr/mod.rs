@@ -85,3 +85,8 @@ impl<T: NetlinkAttributeDeserializable> NetlinkPayloadResponse for Vec<T> {
         Ok(attrs)
     }
 }
+
+#[cfg(feature = "nldl_derive")]
+pub use nldl_derive::NetlinkAttributeDeserializable;
+#[cfg(feature = "nldl_derive")]
+pub use nldl_derive::NetlinkAttributeSerializable;
