@@ -6,10 +6,12 @@ use raw::RawNetlinkAttribute;
 use std::fmt::Debug;
 pub use unknown::UnknownAttribute;
 
+mod err;
 mod nested;
 mod raw;
 mod unknown;
 
+pub use err::DeserializeError;
 pub use nested::Nested;
 pub use raw::ParseRawNetlinkAttributeError;
 
