@@ -4,4 +4,4 @@ error: proc-macro derive panicked
 1 | #[derive(nldl::attr::Serialize)]
   |          ^^^^^^^^^^^^^^^^^^^^^
   |
-  = help: message: Failed to parse enum variants in NetlinkAttributeSerializable derive: Variant "Flags" contains more than one associated value.
+  = help: message: Failed to parse enum variants in nldl_derive: Variant "Flags" contains more than one associated value.

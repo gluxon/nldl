@@ -4,4 +4,4 @@ error: proc-macro derive panicked
 1 | #[derive(Debug, PartialEq, nldl::attr::Deserialize)]
   |                            ^^^^^^^^^^^^^^^^^^^^^^^
   |
-  = help: message: nldl::attr::Deserialize derive may only be used on enums.
+  = help: message: nldl_derive may only be used on enums.

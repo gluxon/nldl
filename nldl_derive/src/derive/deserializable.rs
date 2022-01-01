@@ -1,57 +1,26 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::Data;
 use syn::DeriveInput;
 
-use crate::parsing::nla_type::PartitionedAttributeKinds;
+use crate::parsing::parse_or_panic::parse_or_panic;
+use crate::parsing::parse_or_panic::ParseOrPanicReturn;
 
 pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
-    let data_enum = match &ast.data {
-        Data::Enum(data_enum) => data_enum,
-        _ => panic!("nldl::attr::Deserialize derive may only be used on enums."),
-    };
+    let ParseOrPanicReturn {
+        name,
+        no_payload_idents,
+        no_payload_nla_types,
+        simple_idents,
+        simple_nla_types,
+        wildcard_ident,
+    } = parse_or_panic(ast);
 
-    let partitioned_variants = PartitionedAttributeKinds::from(data_enum).unwrap_or_else(|err| {
-        panic!(
-            "Failed to parse enum variants in NetlinkAttributeSerializable derive: {}",
-            err
-        )
-    });
-    if let Some(unmarked_variant) = partitioned_variants.unmarked.first() {
-        panic!(
-            "Please annotate all enum variants with #[nla_type(..)]. Saw \"{}\" unannotated.",
-            unmarked_variant.ident
-        );
-    }
-    let wildcard_ident = match &partitioned_variants.wildcard[..] {
-        [variant] => variant.ident,
-        [] => panic!(
+    let wildcard_ident = match wildcard_ident {
+        None => panic!(
             "One variant must be marked with #[nla_type(_)] for wildcard handling. None found."
         ),
-        [..] => panic!(
-            "Only 1 variant may be marked with #[nla_type(_)]. Saw {}",
-            partitioned_variants.wildcard.len()
-        ),
+        Some(ident) => ident,
     };
-
-    let name = &ast.ident;
-    let (no_payload_idents, no_payload_nla_types) = partitioned_variants
-        .no_payload
-        .into_iter()
-        .fold((vec![], vec![]), |mut acc, attr| {
-            acc.0.push(attr.ident);
-            acc.1.push(attr.ty);
-            acc
-        });
-    let (simple_idents, simple_nla_types) =
-        partitioned_variants
-            .simple
-            .into_iter()
-            .fold((vec![], vec![]), |mut acc, attr| {
-                acc.0.push(attr.ident);
-                acc.1.push(attr.ty);
-                acc
-            });
 
     // Expressions can't be inlined on the left side of a match arm, so we'll assign them to a
     // namespaced constant first.
