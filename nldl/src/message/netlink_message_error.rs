@@ -4,7 +4,7 @@ use super::RawNetlinkMessageHeader;
 use arrayref::array_ref;
 use std::mem::size_of;
 
-/// https://www.infradead.org/~tgr/libnl/doc/core.html#core_errmsg
+/// <https://www.infradead.org/~tgr/libnl/doc/core.html#core_errmsg>
 #[derive(Debug, PartialEq)]
 pub struct NetlinkErrorMessagePayload {
     pub error_code: u32,

@@ -9,7 +9,7 @@ use crate::message::NetlinkPayloadResponse;
 /// continues until there are no remaining bytes in the buffer.
 ///
 /// This is similar to the process described in libnl here:
-/// https://www.infradead.org/~tgr/libnl/doc/core.html#_parsing_a_message
+/// <https://www.infradead.org/~tgr/libnl/doc/core.html#_parsing_a_message>
 ///
 /// This iterator intentionally does not free messages that have already been iterated over to avoid
 /// re-malloc'ing remaining bytes. Memory is not released until the entire iterator is dropped.

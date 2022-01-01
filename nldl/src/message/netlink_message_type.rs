@@ -5,7 +5,7 @@ use super::NetlinkPayloadResponse;
 
 /// The NetlinkMessageType variant is determined from a Netlink message's "type" field.
 ///
-/// https://www.infradead.org/~tgr/libnl/doc/core.html#core_msg_types
+/// <https://www.infradead.org/~tgr/libnl/doc/core.html#core_msg_types>
 #[derive(Debug, PartialEq)]
 pub enum NetlinkMessageType<T> {
     /// No operation, message must be discarded
