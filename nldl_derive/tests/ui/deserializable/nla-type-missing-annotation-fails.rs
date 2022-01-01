@@ -1,7 +1,6 @@
 use nldl::attr::UnknownAttribute;
-use nldl_derive::NetlinkAttributeDeserializable;
 
-#[derive(Debug, PartialEq, NetlinkAttributeDeserializable)]
+#[derive(Debug, PartialEq, nldl::attr::Deserialize)]
 #[netlink15(deserialize(error = "ParseNlaIntError"))]
 enum ControllerAttributeOperation {
     #[nla_type(0)]

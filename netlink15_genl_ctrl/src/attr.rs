@@ -3,11 +3,9 @@ use nldl::attr::ParseNetlinkAttributeFromBufferError;
 use nldl::attr::UnknownAttribute;
 use nldl::utils::NlaGetStringError;
 use nldl::utils::ParseNlaIntError;
-use nldl_derive::NetlinkAttributeDeserializable;
-use nldl_derive::NetlinkAttributeSerializable;
 
 // https://www.infradead.org/~tgr/libnl/doc/api/ctrl_8c_source.html#l00043
-#[derive(Debug, PartialEq, NetlinkAttributeSerializable, NetlinkAttributeDeserializable)]
+#[derive(Debug, PartialEq, nldl::attr::Serialize, nldl::attr::Deserialize)]
 #[netlink15(deserialize(error = "ControllerAttributeDeserializeError"))]
 pub enum ControllerAttribute {
     #[nla_type(libc::CTRL_ATTR_UNSPEC as u16)]
@@ -30,7 +28,7 @@ pub enum ControllerAttribute {
     Unknown(UnknownAttribute),
 }
 
-#[derive(Debug, PartialEq, NetlinkAttributeSerializable, NetlinkAttributeDeserializable)]
+#[derive(Debug, PartialEq, nldl::attr::Serialize, nldl::attr::Deserialize)]
 #[netlink15(deserialize(error = "ParseNlaIntError"))]
 pub enum ControllerAttributeOperation {
     #[nla_type(libc::CTRL_ATTR_OP_UNSPEC as u16)]
@@ -43,7 +41,7 @@ pub enum ControllerAttributeOperation {
     Unknown(UnknownAttribute),
 }
 
-#[derive(Debug, PartialEq, NetlinkAttributeSerializable, NetlinkAttributeDeserializable)]
+#[derive(Debug, PartialEq, nldl::attr::Serialize, nldl::attr::Deserialize)]
 #[netlink15(deserialize(error = "ControllerAttributeMulticastGroupDeserializeError"))]
 pub enum ControllerAttributeMulticastGroup {
     #[nla_type(libc::CTRL_ATTR_MCAST_GRP_UNSPEC as u16)]

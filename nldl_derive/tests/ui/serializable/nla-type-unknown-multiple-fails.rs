@@ -1,7 +1,6 @@
 use nldl::attr::UnknownAttribute;
-use nldl_derive::NetlinkAttributeSerializable;
 
-#[derive(Debug, PartialEq, NetlinkAttributeSerializable)]
+#[derive(Debug, PartialEq, nldl::attr::Serialize)]
 enum TestEnum {
     #[nla_type(_)]
     Unknown(UnknownAttribute),

@@ -1,7 +1,7 @@
 error: proc-macro derive panicked
- --> tests/ui/deserializable/derive-on-struct-fails.rs:3:28
+ --> tests/ui/deserializable/derive-on-struct-fails.rs:1:28
   |
-3 | #[derive(Debug, PartialEq, NetlinkAttributeDeserializable)]
-  |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1 | #[derive(Debug, PartialEq, nldl::attr::Deserialize)]
+  |                            ^^^^^^^^^^^^^^^^^^^^^^^
   |
   = help: message: NetlinkAttributeDeserializable derive may only be used on enums.

@@ -1,6 +1,4 @@
-use nldl_derive::NetlinkAttributeDeserializable;
-
-#[derive(Debug, PartialEq, NetlinkAttributeDeserializable)]
+#[derive(Debug, PartialEq, nldl::attr::Deserialize)]
 struct TestStruct {}
 
 fn main() {}

@@ -1,5 +1,5 @@
 error[E0080]: evaluation of constant value failed
-  --> tests/ui/deserializable/nla-type-overflow-fails.rs:11:16
-   |
-11 |     #[nla_type(u16::MAX + 1)]
-   |                ^^^^^^^^^^^^ attempt to compute `u16::MAX + 1_u16`, which would overflow
+ --> tests/ui/deserializable/nla-type-overflow-fails.rs:9:16
+  |
+9 |     #[nla_type(u16::MAX + 1)]
+  |                ^^^^^^^^^^^^ attempt to compute `u16::MAX + 1_u16`, which would overflow

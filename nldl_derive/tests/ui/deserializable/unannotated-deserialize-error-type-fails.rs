@@ -1,7 +1,6 @@
-use nldl_derive::NetlinkAttributeDeserializable;
 use nldl::attr::UnknownAttribute;
 
-#[derive(Debug, PartialEq, NetlinkAttributeDeserializable)]
+#[derive(Debug, PartialEq, nldl::attr::Deserialize)]
 enum ControllerAttributeOperation {
     #[nla_type(_)]
     Unknown(UnknownAttribute),
