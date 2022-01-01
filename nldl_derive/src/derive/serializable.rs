@@ -52,26 +52,21 @@ pub fn impl_netlink_attribute_serializable(ast: &DeriveInput) -> TokenStream {
             });
 
     quote! {
-        impl nldl::attr::Serialize for #name {
+        impl ::nldl::attr::Serialize for #name {
 
-            fn get_type(&self) -> u16 {
-                use nldl::attr::Serialize;
-
+            fn get_type(&self) -> ::std::primitive::u16 {
                 match self {
                     #( Self::#no_payload_idents => #no_payload_nla_types, )*
                     #( Self::#simple_idents(_) => #simple_nla_types, )*
-                    #( Self::#wildcard_ident(a) => Serialize::get_type(a), )*
+                    #( Self::#wildcard_ident(a) => ::nldl::attr::Serialize::get_type(a), )*
                 }
             }
 
-            fn serialize_payload(&self, buf: &mut Vec<u8>) {
-                use nldl::message::NetlinkPayloadRequest;
-                use nldl::attr::Serialize;
-
+            fn serialize_payload(&self, buf: &mut ::std::vec::Vec<::std::primitive::u8>) {
                 match self {
                     #( Self::#no_payload_idents => {}, )*
-                    #( Self::#simple_idents(val) => NetlinkPayloadRequest::serialize(val, buf), )*
-                    #( Self::#wildcard_ident(a) => Serialize::serialize_payload(a, buf), )*
+                    #( Self::#simple_idents(val) => ::nldl::message::NetlinkPayloadRequest::serialize(val, buf), )*
+                    #( Self::#wildcard_ident(a) => ::nldl::attr::Serialize::serialize_payload(a, buf), )*
                 }
             }
         }

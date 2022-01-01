@@ -77,8 +77,8 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
     let type_id_consts_quote = quote! {
         #[allow(non_upper_case_globals)]
         mod #type_ids_mod_name {
-            #( pub const #no_payload_idents: u16 = #no_payload_nla_types; )*
-            #( pub const #simple_idents: u16 = #simple_nla_types; )*
+            #( pub const #no_payload_idents: ::std::primitive::u16 = #no_payload_nla_types; )*
+            #( pub const #simple_idents: ::std::primitive::u16 = #simple_nla_types; )*
         }
     };
 
@@ -93,20 +93,18 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
     };
 
     quote! {
-        impl nldl::attr::Deserialize for #name {
+        impl ::nldl::attr::Deserialize for #name {
             type Error = #deserialize_error_type;
 
-            fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {
-                use nldl::message::NetlinkPayloadResponse;
-
+            fn deserialize(ty: ::std::primitive::u16, payload: &[::std::primitive::u8]) -> ::std::result::Result<Self, Self::Error> {
                 #type_ids_enum_checker_quote
 
                 #type_id_consts_quote
 
                 Ok(match ty {
                     #( #type_ids_mod_name::#no_payload_idents => Self::#no_payload_idents, )*
-                    #( #type_ids_mod_name::#simple_idents => Self::#simple_idents(NetlinkPayloadResponse::deserialize(payload)?), )*
-                    _ => Self::#wildcard_ident(UnknownAttribute { ty, payload: Vec::from(payload) }),
+                    #( #type_ids_mod_name::#simple_idents => Self::#simple_idents(::nldl::message::NetlinkPayloadResponse::deserialize(payload)?), )*
+                    _ => Self::#wildcard_ident(::nldl::attr::UnknownAttribute { ty, payload: ::std::vec::Vec::from(payload) }),
                 })
             }
         }
