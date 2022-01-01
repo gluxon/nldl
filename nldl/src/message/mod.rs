@@ -139,7 +139,7 @@ pub trait NetlinkPayloadRequest {
 }
 
 pub trait NetlinkPayloadResponse: Debug + PartialEq + Sized {
-    type Error: Debug + std::error::Error;
+    type Error: std::error::Error;
     fn deserialize(buf: &[u8]) -> Result<Self, Self::Error>;
 }
 
