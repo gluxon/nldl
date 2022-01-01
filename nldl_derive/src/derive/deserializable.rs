@@ -93,7 +93,7 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
     };
 
     quote! {
-        impl nldl::attr::NetlinkAttributeDeserializable for #name {
+        impl nldl::attr::Deserialize for #name {
             type Error = #deserialize_error_type;
 
             fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {

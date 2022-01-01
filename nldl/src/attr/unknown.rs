@@ -1,5 +1,5 @@
-use super::NetlinkAttributeDeserializable;
-use super::NetlinkAttributeSerializable;
+use super::Deserialize;
+use super::Serialize;
 
 #[derive(Debug, PartialEq)]
 pub struct UnknownAttribute {
@@ -7,7 +7,7 @@ pub struct UnknownAttribute {
     pub payload: Vec<u8>,
 }
 
-impl NetlinkAttributeSerializable for UnknownAttribute {
+impl Serialize for UnknownAttribute {
     fn get_type(&self) -> u16 {
         self.ty
     }
@@ -17,7 +17,7 @@ impl NetlinkAttributeSerializable for UnknownAttribute {
     }
 }
 
-impl NetlinkAttributeDeserializable for UnknownAttribute {
+impl Deserialize for UnknownAttribute {
     type Error = std::convert::Infallible;
 
     fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {

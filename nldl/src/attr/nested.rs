@@ -1,6 +1,6 @@
-use super::NetlinkAttributeDeserializable;
-use super::NetlinkAttributeSerializable;
+use super::Deserialize;
 use super::ParseNetlinkAttributeFromBufferError;
+use super::Serialize;
 use crate::message::NetlinkPayloadRequest;
 use crate::message::NetlinkPayloadResponse;
 
@@ -11,7 +11,7 @@ pub struct Nested<T>(pub Vec<T>);
 
 pub const NESTED_ATTR_NLA_TYPE: u16 = 0;
 
-impl<T: NetlinkAttributeSerializable> NetlinkAttributeSerializable for Nested<T> {
+impl<T: Serialize> Serialize for Nested<T> {
     fn get_type(&self) -> u16 {
         NESTED_ATTR_NLA_TYPE
     }
@@ -21,7 +21,7 @@ impl<T: NetlinkAttributeSerializable> NetlinkAttributeSerializable for Nested<T>
     }
 }
 
-impl<T: NetlinkAttributeDeserializable> NetlinkAttributeDeserializable for Nested<T> {
+impl<T: Deserialize> Deserialize for Nested<T> {
     type Error = ParseNetlinkAttributeFromBufferError<T>;
 
     fn deserialize(_ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {

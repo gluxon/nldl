@@ -52,26 +52,26 @@ pub fn impl_netlink_attribute_serializable(ast: &DeriveInput) -> TokenStream {
             });
 
     quote! {
-        impl nldl::attr::NetlinkAttributeSerializable for #name {
+        impl nldl::attr::Serialize for #name {
 
             fn get_type(&self) -> u16 {
-                use nldl::attr::NetlinkAttributeSerializable;
+                use nldl::attr::Serialize;
 
                 match self {
                     #( Self::#no_payload_idents => #no_payload_nla_types, )*
                     #( Self::#simple_idents(_) => #simple_nla_types, )*
-                    #( Self::#wildcard_ident(a) => NetlinkAttributeSerializable::get_type(a), )*
+                    #( Self::#wildcard_ident(a) => Serialize::get_type(a), )*
                 }
             }
 
             fn serialize_payload(&self, buf: &mut Vec<u8>) {
                 use nldl::message::NetlinkPayloadRequest;
-                use nldl::attr::NetlinkAttributeSerializable;
+                use nldl::attr::Serialize;
 
                 match self {
                     #( Self::#no_payload_idents => {}, )*
                     #( Self::#simple_idents(val) => NetlinkPayloadRequest::serialize(val, buf), )*
-                    #( Self::#wildcard_ident(a) => NetlinkAttributeSerializable::serialize_payload(a, buf), )*
+                    #( Self::#wildcard_ident(a) => Serialize::serialize_payload(a, buf), )*
                 }
             }
         }
