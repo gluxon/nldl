@@ -1,12 +1,8 @@
 use nldl::attr::Nested;
-use nldl::attr::ParseNetlinkAttributeFromBufferError;
 use nldl::attr::UnknownAttribute;
-use nldl::utils::NlaGetStringError;
-use nldl::utils::ParseNlaIntError;
 
 // https://www.infradead.org/~tgr/libnl/doc/api/ctrl_8c_source.html#l00043
 #[derive(Debug, PartialEq, nldl::attr::Serialize, nldl::attr::Deserialize)]
-#[nldl(deserialize(error = "ControllerAttributeDeserializeError"))]
 pub enum ControllerAttribute {
     #[nla_type(libc::CTRL_ATTR_UNSPEC as u16)]
     Unspec,
@@ -29,7 +25,6 @@ pub enum ControllerAttribute {
 }
 
 #[derive(Debug, PartialEq, nldl::attr::Serialize, nldl::attr::Deserialize)]
-#[nldl(deserialize(error = "ParseNlaIntError"))]
 pub enum ControllerAttributeOperation {
     #[nla_type(libc::CTRL_ATTR_OP_UNSPEC as u16)]
     Unspec,
@@ -42,7 +37,6 @@ pub enum ControllerAttributeOperation {
 }
 
 #[derive(Debug, PartialEq, nldl::attr::Serialize, nldl::attr::Deserialize)]
-#[nldl(deserialize(error = "ControllerAttributeMulticastGroupDeserializeError"))]
 pub enum ControllerAttributeMulticastGroup {
     #[nla_type(libc::CTRL_ATTR_MCAST_GRP_UNSPEC as u16)]
     Unspec,
@@ -52,30 +46,4 @@ pub enum ControllerAttributeMulticastGroup {
     Id(u32),
     #[nla_type(_)]
     Unknown(UnknownAttribute),
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum ControllerAttributeDeserializeError {
-    #[error(transparent)]
-    ParseNlaIntError(#[from] ParseNlaIntError),
-    #[error(transparent)]
-    NlaGetStringError(#[from] NlaGetStringError),
-    #[error(transparent)]
-    DeserializeBufferError(#[from] ParseNetlinkAttributeFromBufferError),
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum ControllerAttributeMulticastGroupDeserializeError {
-    #[error(transparent)]
-    ParseNlaIntError(#[from] ParseNlaIntError),
-    #[error(transparent)]
-    NlaGetStringError(#[from] NlaGetStringError),
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum ControllerAttributeOperationDeserializeError {
-    #[error(transparent)]
-    ParseNlaIntError(#[from] ParseNlaIntError),
-    #[error(transparent)]
-    NlaGetStringError(#[from] NlaGetStringError),
 }

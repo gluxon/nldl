@@ -1,8 +1,8 @@
 error[E0081]: discriminant value `0` already exists
-  --> tests/ui/deserializable/nla-type-duplicate-fails.rs:11:16
-   |
-9  |     #[nla_type(0)]
-   |                - first use of `0`
-10 |     Unspec,
-11 |     #[nla_type(crate::ZERO)]
-   |                ^^^^^^^^^^^ enum already has `0`
+ --> tests/ui/deserializable/nla-type-duplicate-fails.rs:9:16
+  |
+7 |     #[nla_type(0)]
+  |                - first use of `0`
+8 |     Unspec,
+9 |     #[nla_type(crate::ZERO)]
+  |                ^^^^^^^^^^^ enum already has `0`

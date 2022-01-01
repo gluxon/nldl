@@ -19,10 +19,8 @@ static struct nla_policy family_op_policy[CTRL_ATTR_OP_MAX+1] = {
 
 ```rust
 use nldl::attr::UnknownAttribute;
-use nldl::utils::ParseNlaIntError;
 
 #[derive(Debug, PartialEq, nldl::attr::Serialize, nldl::attr::Deserialize)]
-#[nldl(deserialize(error = "ParseNlaIntError"))]
 pub enum ControllerAttributeOperation {
     #[nla_type(libc::CTRL_ATTR_OP_UNSPEC as u16)]
     Unspec,
