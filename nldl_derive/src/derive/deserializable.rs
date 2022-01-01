@@ -9,7 +9,7 @@ use crate::parsing::nla_type::PartitionedAttributeKinds;
 pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
     let data_enum = match &ast.data {
         Data::Enum(data_enum) => data_enum,
-        _ => panic!("NetlinkAttributeDeserializable derive may only be used on enums."),
+        _ => panic!("nldl::attr::Deserialize derive may only be used on enums."),
     };
 
     let deserialize_error_type: TokenStream = match DeriveOptions::try_from(ast) {

@@ -9,7 +9,7 @@ use syn::DeriveInput;
 pub fn impl_netlink_attribute_serializable(ast: &DeriveInput) -> TokenStream {
     let data_enum = match &ast.data {
         Data::Enum(data_enum) => data_enum,
-        _ => panic!("NetlinkAttributeSerializable derive may only be used on enums."),
+        _ => panic!("nldl::attr::Serialize derive may only be used on enums."),
     };
     let partitioned_variants = PartitionedAttributeKinds::from(data_enum).unwrap_or_else(|err| {
         panic!(
