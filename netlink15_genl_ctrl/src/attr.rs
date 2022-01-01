@@ -61,13 +61,7 @@ pub enum ControllerAttributeDeserializeError {
     #[error(transparent)]
     NlaGetStringError(#[from] NlaGetStringError),
     #[error(transparent)]
-    DeserializeOperationError(
-        #[from] ParseNetlinkAttributeFromBufferError<Nested<ControllerAttributeOperation>>,
-    ),
-    #[error(transparent)]
-    DeserializeMulticastGroupError(
-        #[from] ParseNetlinkAttributeFromBufferError<Nested<ControllerAttributeMulticastGroup>>,
-    ),
+    DeserializeBufferError(#[from] ParseNetlinkAttributeFromBufferError),
 }
 
 #[derive(thiserror::Error, Debug)]

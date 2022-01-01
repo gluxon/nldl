@@ -21,8 +21,7 @@ pub trait Serialize {
 }
 
 pub trait Deserialize: Debug + Sized + PartialEq {
-    type Error: Debug + std::error::Error;
-    fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, Self::Error>;
+    fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, DeserializeError>;
 }
 
 impl<T: Serialize> NetlinkPayloadRequest for T {
@@ -35,7 +34,7 @@ impl<T: Serialize> NetlinkPayloadRequest for T {
 }
 
 impl<T: Deserialize> NetlinkPayloadResponse for T {
-    type Error = ParseNetlinkAttributeFromBufferError<T>;
+    type Error = ParseNetlinkAttributeFromBufferError;
 
     fn deserialize(buf: &[u8]) -> Result<Self, Self::Error> {
         let raw = RawNetlinkAttribute::try_from(buf)?;
@@ -53,21 +52,19 @@ impl<T: Serialize> NetlinkPayloadRequest for Vec<T> {
 }
 
 #[derive(thiserror::Error, Debug)]
-pub enum ParseNetlinkAttributeFromBufferError<T: Deserialize> {
+pub enum ParseNetlinkAttributeFromBufferError {
     #[error(
         "An error occurred partitioning a buffer into netlink attribute
     #(len, type, payload) fields: {0}"
     )]
     PartitionBufferError(#[from] ParseRawNetlinkAttributeError),
 
-    // There's a cryptic compiler error message when #[error(transparent)] is
-    // set on the generic below.
-    #[error("{0}")]
-    AttributeDeserializeError(T::Error),
+    #[error("transparent")]
+    AttributeDeserializeError(#[from] DeserializeError),
 }
 
 impl<T: Deserialize> NetlinkPayloadResponse for Vec<T> {
-    type Error = ParseNetlinkAttributeFromBufferError<T>;
+    type Error = ParseNetlinkAttributeFromBufferError;
 
     fn deserialize(buf: &[u8]) -> Result<Self, Self::Error> {
         let mut attrs = vec![];

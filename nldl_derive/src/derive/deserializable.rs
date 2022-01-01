@@ -12,7 +12,8 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
         _ => panic!("nldl::attr::Deserialize derive may only be used on enums."),
     };
 
-    let deserialize_error_type: TokenStream = match DeriveOptions::try_from(ast) {
+    // TODO: Delete this after updating tests
+    let _deserialize_error_type: TokenStream = match DeriveOptions::try_from(ast) {
         Ok(val) => val.deserialize.error_type_name.parse().unwrap(),
         Err(msg) => panic!("{}", msg),
     };
@@ -92,20 +93,29 @@ pub fn impl_netlink_attribute_deserializable(ast: &DeriveInput) -> TokenStream {
         }
     };
 
+    let name_str = name.to_string();
+
     quote! {
         impl ::nldl::attr::Deserialize for #name {
-            type Error = #deserialize_error_type;
-
-            fn deserialize(ty: ::std::primitive::u16, payload: &[::std::primitive::u8]) -> ::std::result::Result<Self, Self::Error> {
+            fn deserialize(ty: ::std::primitive::u16, payload: &[::std::primitive::u8]) -> ::std::result::Result<Self, ::nldl::attr::DeserializeError> {
                 #type_ids_enum_checker_quote
 
                 #type_id_consts_quote
 
-                Ok(match ty {
-                    #( #type_ids_mod_name::#no_payload_idents => Self::#no_payload_idents, )*
-                    #( #type_ids_mod_name::#simple_idents => Self::#simple_idents(::nldl::message::NetlinkPayloadResponse::deserialize(payload)?), )*
-                    _ => Self::#wildcard_ident(::nldl::attr::UnknownAttribute { ty, payload: ::std::vec::Vec::from(payload) }),
-                })
+                match ty {
+                    #( #type_ids_mod_name::#no_payload_idents => Ok(Self::#no_payload_idents), )*
+                    #( #type_ids_mod_name::#simple_idents =>
+                        match ::nldl::message::NetlinkPayloadResponse::deserialize(payload) {
+                            Ok(val) => Ok(Self::#simple_idents(val)),
+                            Err(err) => Err(::nldl::attr::DeserializeError {
+                                attribute_struct_name: #name_str,
+                                nla_type_id: ty,
+                                source: Box::new(err)
+                            })
+                        },
+                    )*
+                    _ => Ok(Self::#wildcard_ident(::nldl::attr::UnknownAttribute { ty, payload: ::std::vec::Vec::from(payload) })),
+                }
             }
         }
     }

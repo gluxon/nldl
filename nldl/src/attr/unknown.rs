@@ -1,4 +1,5 @@
 use super::Deserialize;
+use super::DeserializeError;
 use super::Serialize;
 
 #[derive(Debug, PartialEq)]
@@ -18,9 +19,7 @@ impl Serialize for UnknownAttribute {
 }
 
 impl Deserialize for UnknownAttribute {
-    type Error = std::convert::Infallible;
-
-    fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {
+    fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, DeserializeError> {
         Ok(Self {
             ty,
             payload: Vec::from(payload),

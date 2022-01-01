@@ -1,5 +1,5 @@
 use super::Deserialize;
-use super::ParseNetlinkAttributeFromBufferError;
+use super::DeserializeError;
 use super::Serialize;
 use crate::message::NetlinkPayloadRequest;
 use crate::message::NetlinkPayloadResponse;
@@ -22,10 +22,14 @@ impl<T: Serialize> Serialize for Nested<T> {
 }
 
 impl<T: Deserialize> Deserialize for Nested<T> {
-    type Error = ParseNetlinkAttributeFromBufferError<T>;
+    fn deserialize(ty: u16, payload: &[u8]) -> Result<Self, DeserializeError> {
+        let attributes: Vec<T> =
+            NetlinkPayloadResponse::deserialize(payload).map_err(|err| DeserializeError {
+                attribute_struct_name: "Nested",
+                nla_type_id: ty,
+                source: Box::new(err),
+            })?;
 
-    fn deserialize(_ty: u16, payload: &[u8]) -> Result<Self, Self::Error> {
-        let attributes: Vec<T> = NetlinkPayloadResponse::deserialize(payload)?;
         Ok(Self(attributes))
     }
 }
