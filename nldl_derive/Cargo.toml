@@ -3,6 +3,8 @@ name = "nldl_derive"
 version = "0.1.0"
 authors = ["Brandon Cheng <brandon.cheng@protonmail.com>"]
 edition = "2021"
+license = "MIT"
+repository = "https://github.com/gluxon/nldl"
 
 [lib]
 proc-macro = true
