@@ -4,6 +4,9 @@ version = "0.1.0"
 authors = ["Brandon Cheng <brandon.cheng@protonmail.com>"]
 edition = "2021"
 
+[package.metadata.docs.rs]
+all-features = true
+
 [dependencies]
 arrayref = "0.3.6"
 libc = "0.2.66"
