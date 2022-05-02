@@ -44,6 +44,7 @@ macro_rules! create_nla_put_int {
 
 create_nla_put_int!(nla_put_u16, u16);
 create_nla_put_int!(nla_put_u32, u32);
+create_nla_put_int!(nla_put_u64, u64);
 
 #[derive(thiserror::Error, Clone, Debug)]
 pub enum NlaGetStringError {
