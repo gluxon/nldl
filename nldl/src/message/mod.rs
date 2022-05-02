@@ -159,6 +159,12 @@ impl NetlinkPayloadRequest for u32 {
     }
 }
 
+impl NetlinkPayloadRequest for Vec<u8> {
+    fn serialize(&self, buf: &mut Vec<u8>) {
+        buf.extend(self)
+    }
+}
+
 impl NetlinkPayloadRequest for String {
     fn serialize(&self, buf: &mut Vec<u8>) {
         nla_put_string(buf, self);
