@@ -14,10 +14,12 @@ use super::utils::nla_get_string;
 use super::utils::nla_get_u16;
 use super::utils::nla_get_u32;
 use super::utils::nla_get_u64;
+use super::utils::nla_get_u8;
 use super::utils::nla_put_string;
 use super::utils::nla_put_u16;
 use super::utils::nla_put_u32;
 use super::utils::nla_put_u64;
+use super::utils::nla_put_u8;
 use super::utils::NlaGetStringError;
 use super::utils::ParseNlaIntError;
 use super::write_to_buf_with_prefixed_u32_len;
@@ -149,6 +151,12 @@ impl NetlinkPayloadRequest for () {
     fn serialize(&self, _buf: &mut Vec<u8>) {}
 }
 
+impl NetlinkPayloadRequest for u8 {
+    fn serialize(&self, buf: &mut Vec<u8>) {
+        nla_put_u8(buf, *self);
+    }
+}
+
 impl NetlinkPayloadRequest for u16 {
     fn serialize(&self, buf: &mut Vec<u8>) {
         nla_put_u16(buf, *self);
@@ -199,6 +207,14 @@ impl NetlinkPayloadResponse for () {
 
     fn deserialize(_buf: &[u8]) -> Result<Self, Self::Error> {
         Ok(())
+    }
+}
+
+impl NetlinkPayloadResponse for u8 {
+    type Error = ParseNlaIntError;
+
+    fn deserialize(buf: &[u8]) -> Result<Self, Self::Error> {
+        nla_get_u8(buf)
     }
 }
 
