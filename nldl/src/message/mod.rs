@@ -165,6 +165,12 @@ impl NetlinkPayloadRequest for Vec<u8> {
     }
 }
 
+impl<const N: usize> NetlinkPayloadRequest for [u8; N] {
+    fn serialize(&self, buf: &mut Vec<u8>) {
+        buf.extend(self)
+    }
+}
+
 impl NetlinkPayloadRequest for String {
     fn serialize(&self, buf: &mut Vec<u8>) {
         nla_put_string(buf, self);
@@ -209,6 +215,14 @@ impl NetlinkPayloadResponse for Vec<u8> {
 
     fn deserialize(buf: &[u8]) -> Result<Self, Self::Error> {
         Ok(Self::from(buf))
+    }
+}
+
+impl<const N: usize> NetlinkPayloadResponse for [u8; N] {
+    type Error = std::array::TryFromSliceError;
+
+    fn deserialize(buf: &[u8]) -> Result<Self, Self::Error> {
+        buf.try_into()
     }
 }
 
