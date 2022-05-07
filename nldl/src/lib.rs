@@ -2,7 +2,7 @@
 //!
 //! nldl is a library for declaratively defining serializable/deserializable [Netlink](https://en.wikipedia.org/wiki/Netlink) data structures in Rust.
 //!
-//! **This library is in active development and does not yet follow semantic versioning.** API changes will be actively made until a 1.0 release.
+//! The declarative nature of this library is expected to reduce the amount of effort needed to implement Rust support for new Netlink protocols. **This library is experimental and not comprehensively documented.** Until it reaches a stable release, we recommend existing alternatives such as [neli](https://github.com/jbaublitz/neli) and [little-dude/netlink](https://github.com/little-dude/netlink).
 //!
 //! # Example
 //!
