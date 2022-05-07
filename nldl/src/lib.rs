@@ -30,6 +30,19 @@
 //!     Unknown(UnknownAttribute),
 //! }
 //! ```
+//!
+//! # FAQ
+//!
+//! ## Why another Rust netlink library?
+//!
+//! `nldl` provides a derive trait with the goal of making it easier to describe how Rust data structures map to Netlink messages. At the time of writing, existing Rust netlink libraries require more manual (de)serialization implementation for each new message/attribute type.
+//!
+//! ## Why not use serde?
+//!
+//! `nldl` is heavily inspired by [`serde`](https://serde.rs/), but it's concerned with a bit more than `serde` in some areas, and a bit less in others. This makes the functionality gap significant enough to experiment.
+//!
+//! - `nldl` may also provide a common runtime library for sending/receiving Netlink messages derived from the library.
+//! - `serde` allows data structures to be serialized/deserialized into multiple different formats (e.g. json, toml). This flexibility may not be //! valuable for data structures specific to the Netlink protocol.
 
 use std::mem::size_of;
 
