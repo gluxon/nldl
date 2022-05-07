@@ -90,12 +90,12 @@ impl TryFrom<Vec<ControllerAttribute>> for Family {
             header_size: header_size.ok_or(Self::Error::MissingFamilyAttribute)?,
             max_attr: max_attr.ok_or(Self::Error::MissingFamilyAttribute)?,
             operations: operations
-                .unwrap_or_else(Vec::new)
+                .unwrap_or_default()
                 .into_iter()
                 .map(|nested| nested.0.try_into())
                 .collect::<Result<Vec<FamilyOperation>, _>>()?,
             multicast_groups: multicast_groups
-                .unwrap_or_else(Vec::new)
+                .unwrap_or_default()
                 .into_iter()
                 .map(|nested| nested.0.try_into())
                 .collect::<Result<Vec<FamilyMulticastGroup>, _>>()?,
