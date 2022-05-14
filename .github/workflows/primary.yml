@@ -42,19 +42,22 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: Swatinem/rust-cache@v1
-      - uses: actions-rs/toolchain@v1
+      - name: Install llvm-tools-preview
+        uses: actions-rs/toolchain@v1
         with:
           components: llvm-tools-preview
           override: true
           toolchain: stable
-      - uses: actions-rs/cargo@v1
+      - name: Run tests
+        uses: actions-rs/cargo@v1
         with:
           command: test
           args: --all-features --no-fail-fast
         env:
           LLVM_PROFILE_FILE: "nldl-%p-%m.profraw"
           RUSTFLAGS: '-Cinstrument-coverage'
-      - uses: actions-rs/cargo@v1
+      - name: Install grcov
+        uses: actions-rs/cargo@v1
         with:
           command: install
           args: grcov
