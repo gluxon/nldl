@@ -1,4 +1,6 @@
 //! [![Build Status](https://github.com/gluxon/nldl/workflows/primary/badge.svg?branch=main)](https://github.com/gluxon/nldl/actions?query=workflow%3Aprimary)
+//! [![codecov](https://codecov.io/gh/gluxon/wireguard-uapi-rs/branch/develop/graph/badge.svg)](https://codecov.io/gh/gluxon/nldl)
+//! ![MIT](https://img.shields.io/github/license/gluxon/nldl)
 //!
 //! nldl is a library for declaratively defining serializable/deserializable [Netlink](https://en.wikipedia.org/wiki/Netlink) data structures in Rust.
 //!
