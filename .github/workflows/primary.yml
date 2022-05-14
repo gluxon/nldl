@@ -42,6 +42,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: Swatinem/rust-cache@v1
+        with:
+          # A rough approximation of the current operating system version is needed on the
+          # rust-cache key. This fixes a problem with the grcov command throwing "version
+          # `GLIBC_2.32' not found" before this fix. It's likely a grcov binary dynamically linked
+          # with a different Ubuntu version was getting restored.
+          key: ${{ matrix.os }}
       - name: Install llvm-tools-preview
         uses: actions-rs/toolchain@v1
         with:
