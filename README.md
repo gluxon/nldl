@@ -47,5 +47,3 @@ pub enum ControllerAttributeOperation {
 
 - `nldl` may also provide a common runtime library for sending/receiving Netlink messages derived from the library.
 - `serde` allows data structures to be serialized/deserialized into multiple different formats (e.g. json, toml). This flexibility may not be //! valuable for data structures specific to the Netlink protocol.
-
-License: MIT
