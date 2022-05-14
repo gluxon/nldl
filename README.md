@@ -1,3 +1,9 @@
+<!--
+This README.md is automatically generated from nldl/src/lib.rs. To regenerate:
+
+   $ (cd nldl && cargo readme > ../README.md)
+-->
+
 # nldl
 
 [![Build Status](https://github.com/gluxon/nldl/workflows/primary/badge.svg?branch=main)](https://github.com/gluxon/nldl/actions?query=workflow%3Aprimary)
