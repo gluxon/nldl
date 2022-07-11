@@ -1,5 +1,6 @@
 use crate::attr::ControllerAttribute;
 use crate::err::GenlCtrlCommandError;
+use netlink15_core::message::NetlinkMessageType;
 use netlink15_genl::socket::GenlSocket;
 use netlink15_genl::GenericNetlinkHeader;
 use netlink15_genl::GenericNetlinkRequest;
@@ -19,21 +20,29 @@ pub fn list(sock: &GenlSocket) -> ListResult {
     sock.send(genl_request, flags)?;
     let resp = sock.recv_multipart::<Vec<ControllerAttribute>>()?;
 
-    Ok(resp
-        .map(|read_message_result| read_message_result.map(|message| message.payload.payload))
-        .collect::<Result<_, _>>()?)
+    resp
+        .map(|read_message_result| {
+            read_message_result
+                .map_err(|err| err.into())
+                .and_then(|message| match message.payload {
+                    NetlinkMessageType::Other(genl_message) => Ok(genl_message.payload),
+                    _ => Err(GenlCtrlCommandError::UnexpectedMessageType),
+                })
+        })
+        .collect::<Result<_, _>>()
 }
 
 #[cfg(test)]
 mod tests {
-    use std::convert::TryInto;
-
     use crate::attr::ControllerAttribute;
+    use crate::err::GenlCtrlCommandError;
     use crate::family::Family;
     use crate::family::FamilyMulticastGroup;
     use crate::family::FamilyOperation;
     use netlink15_core::message::utils::create_message_iterator;
+    use netlink15_core::message::NetlinkMessageType;
     use netlink15_genl::GenericNetlinkResponse;
+    use std::convert::TryInto;
 
     #[test]
     fn test_response_deserialization() -> anyhow::Result<()> {
@@ -576,7 +585,12 @@ mod tests {
         let actual =
             create_message_iterator::<GenericNetlinkResponse<Vec<ControllerAttribute>>>(recv_bytes)
                 .map(|read_message_result| {
-                    read_message_result.map(|message| message.payload.payload)
+                    read_message_result
+                        .map_err(|err| err.into())
+                        .and_then(|message| match message.payload {
+                            NetlinkMessageType::Other(genl_message) => Ok(genl_message.payload),
+                            _ => Err(GenlCtrlCommandError::UnexpectedMessageType),
+                        })
                 })
                 .flat_map(|read_message_result| read_message_result.map(|attrs| attrs.try_into()))
                 .collect::<Result<Vec<Family>, _>>()?;

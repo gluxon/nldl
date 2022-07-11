@@ -11,4 +11,7 @@ pub enum GenlCtrlCommandError {
         #[from]
         NetlinkMessageResponseDeserializeError<GenericNetlinkResponse<Vec<ControllerAttribute>>>,
     ),
+    // TODO: Expand up on this description.
+    #[error("Unexpected message type")]
+    UnexpectedMessageType,
 }

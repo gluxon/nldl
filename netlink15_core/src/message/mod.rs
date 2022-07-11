@@ -70,7 +70,7 @@ impl RawNetlinkMessageHeader {
 
 pub struct NetlinkMessageRequest<T: NetlinkPayloadRequest> {
     pub header: NetlinkMessageHeader,
-    pub payload: T,
+    pub payload: NetlinkMessageType<T>,
 }
 
 impl<T: NetlinkPayloadRequest> NetlinkMessageRequest<T> {
@@ -85,7 +85,7 @@ impl<T: NetlinkPayloadRequest> NetlinkMessageRequest<T> {
 #[derive(Debug)]
 pub struct NetlinkMessageResponse<T: NetlinkPayloadResponse> {
     pub header: NetlinkMessageHeader,
-    pub payload: T,
+    pub payload: NetlinkMessageType<T>,
 }
 
 pub type DeserializeNetlinkMessageResult<T> =
@@ -113,11 +113,56 @@ impl<T: NetlinkPayloadResponse> TryFrom<RawNetlinkMessage<'_>> for NetlinkMessag
     type Error = NetlinkMessageResponseDeserializeError<T>;
 
     fn try_from(raw: RawNetlinkMessage<'_>) -> Result<Self, Self::Error> {
-        let header = raw.header.into();
-        let payload = T::deserialize(&raw.payload)
+        let header: NetlinkMessageHeader = raw.header.into();
+        let payload = NetlinkMessageType::deserialize(header.ty, &raw.payload)
             .map_err(NetlinkMessageResponseDeserializeError::PayloadDeserialize)?;
 
         Ok(Self { header, payload })
+    }
+}
+
+/// https://www.infradead.org/~tgr/libnl/doc/core.html#core_msg_types
+#[derive(Debug)]
+pub enum NetlinkMessageType<T> {
+    Noop,
+    Error,
+    Done,
+    Overrun,
+    Other(T),
+}
+
+const NLMSG_NOOP: u16 = libc::NLMSG_NOOP as u16;
+const NLMSG_ERROR: u16 = libc::NLMSG_ERROR as u16;
+const NLMSG_DONE: u16 = libc::NLMSG_DONE as u16;
+const NLMSG_OVERRUN: u16 = libc::NLMSG_OVERRUN as u16;
+
+impl<T> NetlinkMessageType<T>
+where
+    T: NetlinkPayloadRequest,
+{
+    pub fn serialize(&self, buf: &mut Vec<u8>) {
+        match self {
+            NetlinkMessageType::Noop => {}
+            NetlinkMessageType::Error => {}
+            NetlinkMessageType::Done => {}
+            NetlinkMessageType::Overrun => {}
+            NetlinkMessageType::Other(payload) => payload.serialize(buf),
+        }
+    }
+}
+
+impl<T> NetlinkMessageType<T>
+where
+    T: NetlinkPayloadResponse,
+{
+    pub fn deserialize(message_type: u16, buf: &[u8]) -> Result<Self, T::Error> {
+        match message_type {
+            NLMSG_NOOP => Ok(Self::Noop),
+            NLMSG_ERROR => Ok(Self::Error),
+            NLMSG_DONE => Ok(Self::Done),
+            NLMSG_OVERRUN => Ok(Self::Overrun),
+            _ => T::deserialize(buf).map(Self::Other),
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 use super::attr::ControllerAttribute;
 use crate::err::GenlCtrlCommandError;
+use netlink15_core::message::NetlinkMessageType;
 use netlink15_genl::socket::GenlSocket;
 use netlink15_genl::GenericNetlinkHeader;
 use netlink15_genl::GenericNetlinkRequest;
@@ -19,7 +20,10 @@ pub fn get_family(sock: &GenlSocket, family_name: String) -> GetFamilyResult {
     sock.send(genl_request, flags)?;
     let resp = sock.recv::<Vec<ControllerAttribute>>()?;
 
-    Ok(resp?.payload.payload)
+    match resp?.payload {
+        NetlinkMessageType::Other(genl_message) => Ok(genl_message.payload),
+        _ => Err(GenlCtrlCommandError::UnexpectedMessageType),
+    }
 }
 
 #[cfg(test)]

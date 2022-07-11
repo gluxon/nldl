@@ -5,6 +5,7 @@ use netlink15_core::message::DeserializeNetlinkMessageResult;
 use netlink15_core::message::NetlinkMessageHeader;
 use netlink15_core::message::NetlinkMessageRequest;
 use netlink15_core::message::NetlinkMessageResponse;
+use netlink15_core::message::NetlinkMessageType;
 use netlink15_core::message::NetlinkPayloadRequest;
 use netlink15_core::message::NetlinkPayloadResponse;
 use nix::sys::socket::bind;
@@ -52,7 +53,7 @@ impl GenlSocket {
                 seq: 1,
                 pid: 0,
             },
-            payload: genl_request,
+            payload: NetlinkMessageType::Other(genl_request),
         };
 
         let message_bytes = netlink15_core::serialize(&message);
