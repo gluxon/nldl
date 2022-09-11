@@ -9,7 +9,7 @@ edition = "2021"
 libc = "0.2.66"
 nldl = { path = "../nldl", features = ["derive"] }
 netlink15_genl = { path = "../netlink15_genl" }
-nix = "0.18.0"
+nix = "0.20.2"
 thiserror = "1.0"
 
 [dev-dependencies]

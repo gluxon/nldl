@@ -9,5 +9,5 @@ edition = "2021"
 libc = "0.2.66"
 nldl = { path = "../nldl" }
 nldl_derive = { path = "../nldl_derive" }
-nix = "0.18.0"
+nix = "0.20.2"
 thiserror = "1.0"
