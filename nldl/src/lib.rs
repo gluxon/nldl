@@ -44,7 +44,7 @@
 //! `nldl` is heavily inspired by [`serde`](https://serde.rs/), but it's concerned with a bit more than `serde` in some areas, and a bit less in others. This makes the functionality gap significant enough to experiment.
 //!
 //! - `nldl` may also provide a common runtime library for sending/receiving Netlink messages derived from the library.
-//! - `serde` allows data structures to be serialized/deserialized into multiple different formats (e.g. json, toml). This flexibility may not be //! valuable for data structures specific to the Netlink protocol.
+//! - `serde` allows data structures to be serialized/deserialized into multiple different formats (e.g. json, toml). This flexibility may not be valuable for data structures specific to the Netlink protocol.
 
 use std::mem::size_of;
 
