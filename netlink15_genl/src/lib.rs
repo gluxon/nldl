@@ -5,7 +5,7 @@ use std::mem::size_of;
 pub mod socket;
 
 /// See [genlmsghdr](libc::genlmsghdr)
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct GenericNetlinkHeader {
     pub cmd: u8,
     pub version: u8,
@@ -41,7 +41,7 @@ impl<T: NetlinkPayloadRequest> NetlinkPayloadRequest for GenericNetlinkRequest<T
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct GenericNetlinkResponse<T: NetlinkPayloadResponse> {
     pub header: GenericNetlinkHeader,
     pub payload: T,

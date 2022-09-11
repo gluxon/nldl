@@ -8,7 +8,7 @@ pub(crate) struct RawNetlinkMessage<'a> {
     pub payload: &'a [u8],
 }
 
-#[derive(thiserror::Error, Debug, PartialEq)]
+#[derive(thiserror::Error, Debug, PartialEq, Eq)]
 pub enum ReadRawNetlinkMessageError {
     #[error("Found a netlink message with an incomplete header. Saw {len} bytes, but at least {} were expected", size_of::<libc::nlmsghdr>())]
     IncompleteHeader { len: usize },

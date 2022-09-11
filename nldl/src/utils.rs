@@ -1,7 +1,7 @@
 use std::mem::size_of;
 use std::string::FromUtf8Error;
 
-#[derive(thiserror::Error, Clone, Debug, PartialEq)]
+#[derive(thiserror::Error, Clone, Debug, PartialEq, Eq)]
 pub enum ParseNlaIntError {
     #[error(
         "Invalid buffer length for integer. Expected {} found {}.",

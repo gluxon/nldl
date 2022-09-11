@@ -6,7 +6,7 @@ use crate::message::NetlinkPayloadResponse;
 
 /// Wraps zero or more child netlink attributes. The Netlink attribute type ID
 /// (`nla_type`) for this container will always be `0`.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Nested<T>(pub Vec<T>);
 
 pub const NESTED_ATTR_NLA_TYPE: u16 = 0;

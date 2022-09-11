@@ -2,7 +2,7 @@ use crate::attr::ControllerAttribute;
 use crate::attr::ControllerAttributeMulticastGroup;
 use crate::attr::ControllerAttributeOperation;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Family {
     pub family_id: u16,
     pub family_name: String,
@@ -13,13 +13,13 @@ pub struct Family {
     pub multicast_groups: Vec<FamilyMulticastGroup>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct FamilyOperation {
     pub id: u32,
     pub flags: u32,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct FamilyMulticastGroup {
     pub name: String,
     pub id: u32,

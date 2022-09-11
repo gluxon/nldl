@@ -13,7 +13,7 @@ pub(crate) struct RawNetlinkAttribute<'a> {
     pub payload: &'a [u8],
 }
 
-#[derive(thiserror::Error, Debug, PartialEq)]
+#[derive(thiserror::Error, Debug, PartialEq, Eq)]
 pub enum ParseRawNetlinkAttributeError {
     #[error("Found a netlink attribute with an incomplete header. Saw {len} bytes, but at least {} were expected", size_of::<libc::nlattr>())]
     IncompleteHeader { len: usize },

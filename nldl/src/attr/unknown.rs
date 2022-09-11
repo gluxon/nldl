@@ -2,7 +2,7 @@ use super::Deserialize;
 use super::DeserializeError;
 use super::Serialize;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct UnknownAttribute {
     pub ty: u16,
     pub payload: Vec<u8>,

@@ -5,7 +5,7 @@ use arrayref::array_ref;
 use std::mem::size_of;
 
 /// <https://www.infradead.org/~tgr/libnl/doc/core.html#core_errmsg>
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct NetlinkErrorMessagePayload {
     pub error_code: u32,
     pub original_header: RawNetlinkMessageHeader,
@@ -18,7 +18,7 @@ impl NetlinkPayloadRequest for NetlinkErrorMessagePayload {
     }
 }
 
-#[derive(thiserror::Error, Debug, PartialEq)]
+#[derive(thiserror::Error, Debug, PartialEq, Eq)]
 pub enum ReadNetlinkErrorMessageError {
     #[error("Found a netlink message with an insufficiently sized payload buffer. Expected a payload with {expected} bytes (determined from the header) but saw {actual} bytes.")]
     UnexpectedLen { actual: usize, expected: usize },
