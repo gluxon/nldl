@@ -1,8 +1,13 @@
-error[E0081]: discriminant value `0` already exists
- --> tests/ui/deserializable/nla-type-duplicate-fails.rs:9:16
+error[E0081]: discriminant value `0` assigned more than once
+ --> tests/ui/deserializable/nla-type-duplicate-fails.rs:5:51
   |
+5 | #[derive(Debug, PartialEq, nldl::attr::Serialize, nldl::attr::Deserialize)]
+  |                                                   ^^^^^^^^^^^^^^^^^^^^^^^
+6 | enum ControllerAttributeOperation {
 7 |     #[nla_type(0)]
-  |                - first use of `0`
+  |                - first assignment of `0`
 8 |     Unspec,
 9 |     #[nla_type(crate::ZERO)]
-  |                ^^^^^^^^^^^ enum already has `0`
+  |                ----------- second assignment of `0`
+  |
+  = note: this error originates in the derive macro `nldl::attr::Deserialize` (in Nightly builds, run with -Z macro-backtrace for more info)
