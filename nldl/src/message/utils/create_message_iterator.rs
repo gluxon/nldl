@@ -78,7 +78,7 @@ mod tests {
         ];
 
         // Add the start of a new message (len = 30) but nothing else to make it invalid.
-        buf.extend(&[30, 0, 0, 0]);
+        buf.extend([30, 0, 0, 0]);
 
         let mut messages = create_message_iterator::<Vec<u8>>(buf);
 
